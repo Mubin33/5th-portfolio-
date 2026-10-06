@@ -5,7 +5,6 @@ import Image from "next/image";
 import { gsap } from "@/lib/gsap";
 
 export default function About() {
-  const headlineRef = useRef<HTMLHeadingElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const numberRef = useRef<HTMLSpanElement>(null);

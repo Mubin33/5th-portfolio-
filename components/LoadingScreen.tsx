@@ -39,18 +39,17 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
       // Initial state using scoped selectors
       gsap.set(".loader-name", { y: 20, opacity: 0 });
-            gsap.set(".loader-progress-bar", { scaleX: 0 });
+      gsap.set(".loader-progress-bar", { scaleX: 0 });
 
-      // Step 1: Reveal developer name and metadata
+      // Step 1: Reveal developer name
       tl.to(".loader-name", {
         y: 0,
         opacity: 1,
         duration: 0.5,
         ease: "power3.out",
       })
-      
 
-      // Step 2: Animate counter from 00 to 100
+      // Step 2: Animate counter from 00 to 100 smoothly
       .to(counterObj, {
         value: 100,
         duration: 1.6,
@@ -67,26 +66,29 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         },
       })
 
-      // Step 3: Brief hold at 100%
-      .to({}, { duration: 0.1 })
+      // Step 3: Hold briefly at 100% so user perceives 100%
+      .to({}, { duration: 0.2 })
 
-      // Step 4: Cinematic split curtain reveal
-      .to(".loader-name", {
+      // Step 4: Silky smooth synchronized fade out for name, 100% counter, and progress bar
+      .to([".loader-name", ".loader-counter", ".loader-bottom"], {
         opacity: 0,
-        y: -15,
-        duration: 0.35,
-        ease: "power2.in",
+        y: -16,
+        duration: 0.45,
+        stagger: 0.04,
+        ease: "power3.inOut",
       })
+
+      // Step 5: Cinematic split curtain reveal seamlessly parting open
       .to(".loader-curtain-top", {
         yPercent: -100,
-        duration: 0.8,
+        duration: 0.85,
         ease: "power4.inOut",
-      }, "curtain")
+      }, "-=0.15")
       .to(".loader-curtain-bottom", {
         yPercent: 100,
-        duration: 0.8,
+        duration: 0.85,
         ease: "power4.inOut",
-      }, "curtain")
+      }, "<")
       .set(containerRef.current, {
         display: "none",
       });
@@ -113,11 +115,8 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
       {/* Main content layer on top of curtains */}
       <div className="relative z-30 flex flex-col justify-between h-full p-6 sm:p-8 md:p-14 max-w-7xl mx-auto w-full">
-        {/* Top bar */} 
-
         {/* Center Typography & Counter */}
         <div className="my-auto py-12 flex flex-col items-start md:items-center text-left md:text-center">
-         
           <h1
             className="loader-name text-3xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-white uppercase font-sans mb-6"
           >
@@ -125,7 +124,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           </h1>
 
           {/* Large Monospace percentage counter */}
-          <div className="flex items-baseline gap-2 mt-4">
+          <div className="loader-counter flex items-baseline gap-2 mt-4 will-change-transform">
             <span
               ref={counterRef}
               className="font-mono-tech text-6xl md:text-8xl lg:text-9xl font-bold tracking-tight text-white tabular-nums"
@@ -139,7 +138,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         </div>
 
         {/* Bottom progress bar & status */}
-        <div className="w-full flex flex-col gap-3">
+        <div className="loader-bottom w-full flex flex-col gap-3 will-change-transform">
           <div className="w-full h-[1px] bg-neutral-900 overflow-hidden relative">
             <div
               className="loader-progress-bar absolute top-0 left-0 bottom-0 w-full bg-white origin-left will-change-transform"
