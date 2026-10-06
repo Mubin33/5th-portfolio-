@@ -116,7 +116,7 @@ export default function About() {
         <div className="animated-border w-full h-[1px] bg-white/20 origin-left mb-12 will-change-transform" />
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          <div className="lg:col-span-5 flex flex-col justify-between sticky top-28">
+          <div className="lg:col-span-5 flex flex-col justify-between static lg:sticky lg:top-28">
             <div>
               <div className="flex items-baseline gap-4 mb-3">
                 <span

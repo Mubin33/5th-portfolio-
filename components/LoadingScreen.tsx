@@ -39,8 +39,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
       // Initial state using scoped selectors
       gsap.set(".loader-name", { y: 20, opacity: 0 });
-      gsap.set(".loader-meta", { opacity: 0 });
-      gsap.set(".loader-progress-bar", { scaleX: 0 });
+            gsap.set(".loader-progress-bar", { scaleX: 0 });
 
       // Step 1: Reveal developer name and metadata
       tl.to(".loader-name", {
@@ -49,10 +48,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         duration: 0.5,
         ease: "power3.out",
       })
-      .to(".loader-meta", {
-        opacity: 1,
-        duration: 0.4,
-      }, "-=0.2")
+      
 
       // Step 2: Animate counter from 00 to 100
       .to(counterObj, {
@@ -75,7 +71,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       .to({}, { duration: 0.1 })
 
       // Step 4: Cinematic split curtain reveal
-      .to([".loader-name", ".loader-meta"], {
+      .to(".loader-name", {
         opacity: 0,
         y: -15,
         duration: 0.35,
@@ -116,7 +112,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       />
 
       {/* Main content layer on top of curtains */}
-      <div className="relative z-30 flex flex-col justify-between h-full p-8 md:p-14 max-w-7xl mx-auto w-full">
+      <div className="relative z-30 flex flex-col justify-between h-full p-6 sm:p-8 md:p-14 max-w-7xl mx-auto w-full">
         {/* Top bar */} 
 
         {/* Center Typography & Counter */}

@@ -77,15 +77,19 @@
 
 /* Responsive clamp typography */
 .text-hero-giant {
-  font-size: clamp(3.1rem, 11.1vw, 11rem);
+  font-size: clamp(2.2rem, 9.5vw, 11rem);
   line-height: 0.88;
   letter-spacing: -0.04em;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .text-section-huge {
-  font-size: clamp(2.5rem, 8vw, 8rem);
+  font-size: clamp(2rem, 7.5vw, 7.5rem);
   line-height: 0.92;
   letter-spacing: -0.03em;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Custom cursor hide default */

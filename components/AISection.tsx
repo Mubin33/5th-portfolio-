@@ -90,7 +90,7 @@ export default function AISection() {
         >
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 border-b border-white/10 pb-6 mb-8 text-xs">
             <div className="flex items-center gap-4">
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-white/30" />
                 <span className="w-2.5 h-2.5 rounded-full bg-white/30" />
                 <span className="w-2.5 h-2.5 rounded-full bg-white/30" />
@@ -100,7 +100,7 @@ export default function AISection() {
               </span>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => setActiveTab("agents")}
                 data-cursor="pointer"

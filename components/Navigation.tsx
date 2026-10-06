@@ -140,7 +140,7 @@ export default function Navigation() {
       <div
         ref={overlayRef}
         style={{ display: "none" }}
-        className="fixed inset-0 z-40 bg-[#000000] text-white flex flex-col justify-between p-6 md:p-14 overflow-y-auto"
+        className="fixed inset-0 z-40 bg-[#000000] text-white flex flex-col justify-between pt-24 pb-8 px-6 md:p-14 overflow-y-auto"
       >
         {/* <div className="flex justify-between items-center max-w-7xl mx-auto w-full border-b border-white/10 pb-6">
           <div className="flex items-center gap-3">

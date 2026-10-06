@@ -210,8 +210,8 @@ export default function SelectedProjects() {
       </div>
 
       {selectedModalProject && (
-        <div className="fixed inset-0 z-[99990] bg-black/90 backdrop-blur-md flex items-center justify-center p-6 md:p-12 overflow-y-auto">
-          <div className="max-w-3xl w-full bg-[#000000] border border-white/20 p-8 md:p-12 relative flex flex-col justify-between my-auto">
+        <div className="fixed inset-0 z-[99990] bg-black/90 backdrop-blur-md flex items-start sm:items-center justify-center p-4 sm:p-6 md:p-12 overflow-y-auto">
+          <div className="max-w-3xl w-full bg-[#000000] border border-white/20 p-5 sm:p-8 md:p-12 relative flex flex-col justify-between my-auto">
             <div className="flex justify-between items-start border-b border-white/10 pb-6 mb-6">
               <div>
                 <span className="font-mono-tech text-xs text-neutral-400 block mb-1">
@@ -247,7 +247,7 @@ export default function SelectedProjects() {
               {selectedModalProject.description}
             </p>
 
-            <div className="grid grid-cols-3 gap-4 border-y border-white/10 py-4 mb-6 font-mono-tech">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 border-y border-white/10 py-4 mb-6 font-mono-tech">
               {selectedModalProject.metrics.map((m, mIdx) => (
                 <div key={mIdx}>
                   <span className="text-base font-bold text-white block">{m.value}</span>

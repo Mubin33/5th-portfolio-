@@ -81,7 +81,7 @@ export default function ProjectShowcase() {
           ref={trackRef}
           className="flex gap-8 md:gap-14 px-6 md:px-16 w-max will-change-transform items-center"
         >
-          <div className="w-[320px] md:w-[420px] flex-shrink-0 flex flex-col justify-center pr-6">
+          <div className="w-[82vw] max-w-[340px] md:w-[420px] flex-shrink-0 flex flex-col justify-center pr-4 md:pr-6">
             <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase mb-4">
               {"//"} ARCHITECTURAL EXHIBIT
             </span>
@@ -96,7 +96,7 @@ export default function ProjectShowcase() {
           {PROJECTS.map((project) => (
             <div
               key={project.number}
-              className="horizontal-card w-[340px] sm:w-[480px] md:w-[620px] flex-shrink-0 border border-white/20 bg-neutral-950 p-6 md:p-8 flex flex-col justify-between group hover:border-white/50 transition-colors duration-300"
+              className="horizontal-card w-[84vw] max-w-[620px] sm:w-[480px] md:w-[620px] flex-shrink-0 border border-white/20 bg-neutral-950 p-5 sm:p-6 md:p-8 flex flex-col justify-between group hover:border-white/50 transition-colors duration-300"
             >
               <div className="flex items-baseline justify-between border-b border-white/10 pb-4 mb-6">
                 <span className="font-mono-tech text-3xl md:text-4xl font-extrabold text-neutral-400 group-hover:text-white transition-colors">
@@ -144,7 +144,7 @@ export default function ProjectShowcase() {
             </div>
           ))}
 
-          <div className="w-[300px] flex-shrink-0 border border-white/10 p-8 flex flex-col justify-center text-center">
+          <div className="w-[80vw] max-w-[300px] flex-shrink-0 border border-white/10 p-6 md:p-8 flex flex-col justify-center text-center">
             <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase mb-4">
               {"//"} MORE IN REPOSITORIES
             </span>

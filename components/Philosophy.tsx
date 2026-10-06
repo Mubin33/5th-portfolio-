@@ -93,12 +93,12 @@ export default function Philosophy() {
             >
               {/* Left Column: Huge Number */}
               <div className="lg:col-span-3 font-mono-tech">
-                <span className="text-6xl md:text-8xl font-black text-neutral-700 tracking-tighter block select-none">
+                <span className="text-6xl md:text-9xl font-black text-neutral-700 tracking-tighter block select-none">
                   {step.number}
                 </span>
-                <span className="text-xs uppercase tracking-widest text-neutral-400 mt-2 block">
+                {/* <span className="text-xs uppercase tracking-widest text-neutral-400 mt-2 block">
                   PHASE // 0{idx + 1}
-                </span>
+                </span> */}
               </div>
 
               {/* Center Column: Big Statement Headline */}
