@@ -5,6 +5,7 @@ import Image from "next/image";
 import { gsap } from "@/lib/gsap";
 
 export default function About() {
+  const headlineRef = useRef<HTMLHeadingElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const numberRef = useRef<HTMLSpanElement>(null);
@@ -164,29 +165,27 @@ export default function About() {
       className="relative py-28 md:py-40 px-6 md:px-12 border-b border-white/10 bg-black overflow-hidden"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="animated-border w-full h-[1px] bg-white/20 origin-left mb-12 will-change-transform" />
-
+        
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
           {/* Left Column: Title, Narrative Bio, Stats & Meta */}
-          <div className="lg:col-span-7 flex flex-col gap-7">
+          <div className="lg:col-span-6 flex flex-col gap-7">
             <div>
-              <div className="flex items-baseline gap-4 mb-3">
+              {/* <div className="flex items-baseline gap-4 mb-3">
                 <span
                   ref={numberRef}
                   className="font-mono-tech text-4xl md:text-5xl font-bold text-neutral-400 select-none will-change-transform inline-block"
                 >
                   01
                 </span>
-                <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
-                  {"//"} ABOUT ME
-                </span>
-              </div>
-             
+              </div>  */}
+            <h2 className="text-section-huge font-medium uppercase tracking-tighter text-white">
+          ABOUT ME
+        </h2>
             </div>
 
             <div ref={bioRef} className="space-y-6 text-lg md:text-2xl text-neutral-300 font-light leading-relaxed">
               <p className="text-white font-normal">
-                I am <span className="font-semibold text-white underline decoration-white/40 underline-offset-4">MD. Yasin Arafat Mubin</span>, a Full-Stack developer who enjoys building modern web applications, interactive interfaces, and scalable digital experiences.
+                I am <span className="font-semibold text-white decoration-white/40">MD. Yasin Arafat Mubin</span>, a Full-Stack developer who enjoys building modern web applications, interactive interfaces, and scalable digital experiences.
               </p>
               <p className="text-lg md:text-xl">
                 My primary focus is React, Next.js, TypeScript, JavaScript, Node, Python(django), and modern frontend architecture with heavy emphasis on silky smooth motion engineering.
@@ -246,9 +245,9 @@ export default function About() {
           {/* Right Column: High-End Monochromatic Portrait with Radiant White Glow */}
           <div
             ref={imageFrameRef}
-            className="lg:col-span-5 flex flex-col items-center justify-center will-change-transform mt-8 lg:mt-0"
+            className="lg:col-span-6 flex flex-col items-center justify-center will-change-transform mt-8 lg:mt-0"
           >
-            <div className="relative w-full max-w-[500px] aspect-[4/5] border border-white/20 bg-neutral-950/80 overflow-hidden group select-none">
+            <div className="relative w-full max-w-[600px] aspect-[7/8] border border-white/20 bg-neutral-950/80 overflow-hidden group select-none">
               {/* Corner crosshairs */}
               <span className="absolute top-2 left-2 text-xs font-mono-tech text-white/50 z-30 select-none">+</span>
               <span className="absolute top-2 right-2 text-xs font-mono-tech text-white/50 z-30 select-none">+</span>
@@ -269,7 +268,7 @@ export default function About() {
 
               {/* Secondary breathing halo layer */}
               <div
-                className="absolute top-[44%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 sm:w-60 h-48 sm:h-60 rounded-full bg-white/25 blur-[65px] pointer-events-none z-0 animate-pulse"
+                className="absolute top-[84%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 sm:w-60 h-48 sm:h-60 rounded-full bg-white/25 blur-[65px] pointer-events-none z-0 animate-pulse"
               />
 
               {/* Subtle tech background grid pattern */}
@@ -284,9 +283,9 @@ export default function About() {
                   height={698}
                   priority
                   className="w-auto ml-16 h-[93%] object-contain object-bottom select-none transition-all duration-700 group-hover:scale-[1.025]"
-                  style={{
-                    filter: "grayscale(100%) contrast(120%) brightness(1.05)",
-                  }}
+                  // style={{
+                  //   filter: "grayscale(100%) contrast(120%) brightness(1.05)",
+                  // }}
                 />
               </div>
 

@@ -55,7 +55,6 @@ export const DEVELOPER_INFO = {
   socials: [
     { name: "GITHUB", url: "https://github.com/mubin33", handle: "@mubin33" },
     { name: "LINKEDIN", url: "https://linkedin.com/in/md-yasin-arafat-mubin-web-developer", handle: "/in/ MD. Yasin Arafat Mubin" },
-    { name: "EMAIL", url: "mailto:mubinulislam14@gmail.com", handle: "mubinulislam14@gmail.com" },
   ],
 };
 

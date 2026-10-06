@@ -73,9 +73,9 @@ export default function Services() {
                   <h3 className="text-2xl sm:text-4xl lg:text-5xl font-bold uppercase tracking-tight text-white group-hover:translate-x-3 transition-transform duration-300 ease-out">
                     {srv.title}
                   </h3>
-                  <p className="font-mono-tech text-xs tracking-wider text-neutral-400 uppercase mt-2">
+                  {/* <p className="font-mono-tech text-xs tracking-wider text-neutral-400 uppercase mt-2">
                     {"//"} {srv.tagline}
-                  </p>
+                  </p> */}
                 </div>
 
                 <div className="md:col-span-4 flex items-center justify-between gap-4">
