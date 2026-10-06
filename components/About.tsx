@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap } from "@/lib/gsap";
 
 export default function About() {
@@ -9,6 +10,8 @@ export default function About() {
   const numberRef = useRef<HTMLSpanElement>(null);
   const bioRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
+  const imageFrameRef = useRef<HTMLDivElement>(null);
+  const imageGlowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -101,6 +104,54 @@ export default function About() {
           }
         );
       }
+
+      // Smooth reveal & parallax for portrait image frame
+      if (imageFrameRef.current) {
+        gsap.fromTo(
+          imageFrameRef.current,
+          { y: 45, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1.1,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: imageFrameRef.current,
+              start: "top 80%",
+            },
+          }
+        );
+
+        // Subtle parallax scrub during scroll
+        gsap.to(imageFrameRef.current, {
+          yPercent: -6,
+          ease: "none",
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1,
+          },
+        });
+      }
+
+      // Radiant white glow breathe & reveal
+      if (imageGlowRef.current) {
+        gsap.fromTo(
+          imageGlowRef.current,
+          { scale: 0.75, opacity: 0 },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 1.4,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: imageFrameRef.current,
+              start: "top 80%",
+            },
+          }
+        );
+      }
     }, containerRef.current ?? undefined);
 
     return () => ctx.revert();
@@ -115,8 +166,9 @@ export default function About() {
       <div className="max-w-7xl mx-auto">
         <div className="animated-border w-full h-[1px] bg-white/20 origin-left mb-12 will-change-transform" />
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-          <div className="lg:col-span-5 flex flex-col justify-between static lg:sticky lg:top-28">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+          {/* Left Column: Title, Narrative Bio, Stats & Meta */}
+          <div className="lg:col-span-7 flex flex-col gap-7">
             <div>
               <div className="flex items-baseline gap-4 mb-3">
                 <span
@@ -125,19 +177,26 @@ export default function About() {
                 >
                   01
                 </span>
-                {/* <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
-                  {"//"} IDENTITY
-                </span> */}
+                <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
+                  {"//"} ABOUT ME
+                </span>
               </div>
-              <h2
-                ref={titleRef}
-                className="text-section-huge font-bold uppercase tracking-tighter text-white will-change-transform"
-              >
-                ABOUT<br />ME
-              </h2>
+             
             </div>
 
-            <div className="mt-12 pt-8 border-t border-white/10 grid grid-cols-2 gap-6 font-mono-tech">
+            <div ref={bioRef} className="space-y-6 text-lg md:text-2xl text-neutral-300 font-light leading-relaxed">
+              <p className="text-white font-normal">
+                I am <span className="font-semibold text-white underline decoration-white/40 underline-offset-4">MD. Yasin Arafat Mubin</span>, a Full-Stack developer who enjoys building modern web applications, interactive interfaces, and scalable digital experiences.
+              </p>
+              <p className="text-lg md:text-xl">
+                My primary focus is React, Next.js, TypeScript, JavaScript, Node, Python(django), and modern frontend architecture with heavy emphasis on silky smooth motion engineering.
+              </p>
+              <p className="text-neutral-400 text-base md:text-lg">
+                I also work with backend technologies, APIs, databases, and AI-powered development workflows including Model Context Protocol (MCP) and autonomous developer agent pipelines.
+              </p>
+            </div>
+
+            <div className="pt-6 border-t border-white/10 grid grid-cols-2 gap-6 font-mono-tech">
               <div>
                 <span className="text-3xl font-bold text-white block">04+</span>
                 <span className="text-xs text-neutral-400 uppercase tracking-wider">
@@ -151,26 +210,12 @@ export default function About() {
                 </span>
               </div>
             </div>
-          </div>
-
-          <div className="lg:col-span-7 flex flex-col gap-10">
-            <div ref={bioRef} className="space-y-6 text-lg md:text-2xl text-neutral-300 font-light leading-relaxed">
-              <p className="text-white font-normal">
-                I am <span className="font-semibold text-white underline decoration-white/40 underline-offset-4">MD. Yasin Arafat Mubin</span>, a frontend-focused full-stack developer who enjoys building modern web applications, interactive interfaces, and scalable digital experiences.
-              </p>
-              <p>
-                My primary focus is React, Next.js, TypeScript, JavaScript, Python(django), and modern frontend architecture with heavy emphasis on silky smooth motion engineering.
-              </p>
-              <p className="text-neutral-400 text-base md:text-lg">
-                I also work with backend technologies, APIs, databases, and AI-powered development workflows including Model Context Protocol (MCP) and autonomous developer agent pipelines.
-              </p>
-            </div>
 
             <div className="animated-border w-full h-[1px] bg-white/10 origin-left will-change-transform" />
 
             <div
               ref={metaRef}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-6 font-mono-tech text-xs uppercase tracking-wider"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-5 font-mono-tech text-xs uppercase tracking-wider"
             >
               <div className="meta-box p-5 border border-white/10 bg-neutral-950/60">
                 <span className="text-neutral-400 block mb-2">{"//"} LOCATION</span>
@@ -182,7 +227,7 @@ export default function About() {
               <div className="meta-box p-5 border border-white/10 bg-neutral-950/60">
                 <span className="text-neutral-400 block mb-2">{"//"} ROLE</span>
                 <p className="text-white font-sans text-sm font-semibold">
-                 FULL STACK
+                  FULL STACK
                 </p> 
               </div>
 
@@ -195,6 +240,59 @@ export default function About() {
                   AI WORKFLOWS & MCP
                 </span>
               </div>
+            </div>
+          </div>
+
+          {/* Right Column: High-End Monochromatic Portrait with Radiant White Glow */}
+          <div
+            ref={imageFrameRef}
+            className="lg:col-span-5 flex flex-col items-center justify-center will-change-transform mt-8 lg:mt-0"
+          >
+            <div className="relative w-full max-w-[500px] aspect-[4/5] border border-white/20 bg-neutral-950/80 overflow-hidden group select-none">
+              {/* Corner crosshairs */}
+              <span className="absolute top-2 left-2 text-xs font-mono-tech text-white/50 z-30 select-none">+</span>
+              <span className="absolute top-2 right-2 text-xs font-mono-tech text-white/50 z-30 select-none">+</span>
+              <span className="absolute bottom-2 left-2 text-xs font-mono-tech text-white/50 z-30 select-none">+</span>
+              <span className="absolute bottom-2 right-2 text-xs font-mono-tech text-white/50 z-30 select-none">+</span>
+
+              
+
+              {/* RADIANT WHITE GLOW (Backlight halo behind Mubin) */}
+              <div
+                ref={imageGlowRef}
+                className="absolute top-[48%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] sm:w-[340px] h-[280px] sm:h-[340px] rounded-full pointer-events-none z-0"
+                style={{
+                  background: "radial-gradient(circle, rgba(255, 255, 255, 0.32) 0%, rgba(255, 255, 255, 0.14) 42%, rgba(255, 255, 255, 0.04) 65%, transparent 75%)",
+                  filter: "blur(42px)",
+                }}
+              />
+
+              {/* Secondary breathing halo layer */}
+              <div
+                className="absolute top-[44%] left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 sm:w-60 h-48 sm:h-60 rounded-full bg-white/25 blur-[65px] pointer-events-none z-0 animate-pulse"
+              />
+
+              {/* Subtle tech background grid pattern */}
+              <div className="absolute inset-0 bg-grid-tech opacity-25 pointer-events-none z-0" />
+
+              {/* Developer Black & White Portrait */}
+              <div className="relative z-10 w-full h-full flex items-end justify-center pt-10">
+                <Image
+                  src="/mubin_full_img.png"
+                  alt="MD. Yasin Arafat Mubin"
+                  width={623}
+                  height={698}
+                  priority
+                  className="w-auto ml-16 h-[93%] object-contain object-bottom select-none transition-all duration-700 group-hover:scale-[1.025]"
+                  style={{
+                    filter: "grayscale(100%) contrast(120%) brightness(1.05)",
+                  }}
+                />
+              </div>
+
+              {/* Seamless bottom fade into black */}
+              <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-black via-black/85 to-transparent pointer-events-none z-20" />
+ 
             </div>
           </div>
         </div>
