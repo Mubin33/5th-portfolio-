@@ -55,12 +55,12 @@ export default function Contact() {
         { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
         "-=0.4"
       )
-      .fromTo(
-        infoBoxRef.current,
-        { y: 35, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-        "-=0.6"
-      );
+        .fromTo(
+          infoBoxRef.current,
+          { y: 35, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+          "-=0.6"
+        );
     }, containerRef.current ?? undefined);
 
     return () => ctx.revert();
@@ -190,7 +190,7 @@ export default function Contact() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16  items-start">
           {/* Left Column: Direct Transmission Form */}
           <div ref={formBoxRef} className="lg:col-span-7 flex flex-col gap-6">
-            <div> 
+            <div>
               <p className="text-neutral-400 text-sm font-light leading-relaxed mb-8">
                 Submit your project specifications, system requirements, or contract inquiries below. Your transmission will be dispatched directly to my primary inbox.
               </p>
@@ -204,9 +204,9 @@ export default function Contact() {
                 <span className="absolute bottom-2 right-2 text-xs text-white/40">+</span>
 
                 <div className="flex items-center gap-3 text-white mb-4">
-                   
+
                   <h3 className="text-lg md:text-xl font-bold uppercase tracking-tight">
-                    TRANSMISSION CONFIRMED  
+                    TRANSMISSION CONFIRMED
                   </h3>
                 </div>
 
@@ -246,7 +246,7 @@ export default function Contact() {
                       htmlFor="contact-name"
                       className="font-mono-tech text-xs tracking-wider uppercase text-neutral-400 block mb-2"
                     >
-                       YOUR NAME <span className="text-white">*</span>
+                      YOUR NAME <span className="text-white">*</span>
                     </label>
                     <input
                       id="contact-name"
@@ -267,7 +267,7 @@ export default function Contact() {
                       htmlFor="contact-email"
                       className="font-mono-tech text-xs tracking-wider uppercase text-neutral-400 block mb-2"
                     >
-                   RETURN EMAIL <span className="text-white">*</span>
+                      RETURN EMAIL <span className="text-white">*</span>
                     </label>
                     <input
                       id="contact-email"
@@ -289,7 +289,7 @@ export default function Contact() {
                     htmlFor="contact-whatsapp"
                     className="font-mono-tech text-xs tracking-wider uppercase text-neutral-400 block mb-2"
                   >
-                 WHATSAPP NUMBER <span className="text-white">*</span>
+                    WHATSAPP NUMBER <span className="text-white">*</span>
                   </label>
                   <input
                     id="contact-whatsapp"
@@ -310,7 +310,7 @@ export default function Contact() {
                     htmlFor="contact-description"
                     className="font-mono-tech text-xs tracking-wider uppercase text-neutral-400 block mb-2"
                   >
-                     DESCRIPTION<span className="text-white">*</span>
+                    DESCRIPTION<span className="text-white">*</span>
                   </label>
                   <textarea
                     id="contact-description"
@@ -342,7 +342,7 @@ export default function Contact() {
                       {status === "submitting" ? "•••" : "→"}
                     </span>
                   </button>
- 
+
                 </div>
               </form>
             )}
@@ -352,7 +352,7 @@ export default function Contact() {
           <div ref={infoBoxRef} className="lg:col-span-5 flex flex-col gap-10">
             {/* Direct Email Box */}
             <div className="border border-white/10 bg-neutral-950/60 p-6 md:p-8 space-y-4">
-             
+
               <div>
                 <a
                   href={`mailto:${DEVELOPER_INFO.email}`}
@@ -387,13 +387,13 @@ export default function Contact() {
 
             {/* Direct WhatsApp Quick Contact */}
             <div className="border border-white/10 bg-neutral-950/60 p-6 md:p-8 space-y-3">
-              
+
               <p className="text-sm text-neutral-300 font-light">
                 Prefer immediate messaging? Chat directly via WhatsApp for swift syncs and consultation.
               </p>
               <div className="pt-2">
                 <a
-                  href="https://wa.me/8801700000000" // will be linked or open web whatsapp
+                  href="https://wa.me/8801560008450" // will be linked or open web whatsapp
                   target="_blank"
                   rel="noreferrer"
                   data-cursor="link"
@@ -425,7 +425,7 @@ export default function Contact() {
             </div> */}
 
             {/* Networks & Repositories */}
-            <div className="space-y-3"> 
+            <div className="space-y-3">
               <div className="divide-y divide-white/10 border-y border-white/10 font-mono-tech text-sm">
                 {DEVELOPER_INFO.socials.map((soc) => (
                   <a
