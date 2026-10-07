@@ -53,10 +53,10 @@ export default function Home() {
         {/* 05: Experience Timeline */}
         <Experience />
 
-        {/* Interactive Tech Stack Trail */}
-        <div className="hidden lg:block">
+        {/* Interactive Tech Stack Trail (Merged into WatchingCat) */}
+        {/* <div className="hidden lg:block">
         <StackTrail />
-        </div>
+        </div> */}
 
 
         {/* 06: Selected Projects (Vertical Viewport Presentations) */}

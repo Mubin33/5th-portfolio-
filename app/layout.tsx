@@ -14,7 +14,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "MD. Yasin Arafat Mubin — Creative Developer & Frontend Engineer",
+  title: "MD. Yasin Arafat Mubin - Software Developer",
   description:
     "Portfolio of MD. Yasin Arafat Mubin. Frontend-focused full stack engineer specializing in React 19, Next.js 16, TypeScript, GSAP motion, and AI agentic workflows. Based in Dhaka, Bangladesh.",
   keywords: [

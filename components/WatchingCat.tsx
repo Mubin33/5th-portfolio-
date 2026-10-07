@@ -3,6 +3,47 @@
 import React, { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
+interface TechItem {
+  name: string;
+  slug: string;
+  category: "Languages" | "Frontend" | "Backend" | "AI" | "Tools/Infra";
+}
+
+const STACK_LIST: TechItem[] = [
+  // Languages
+  { name: "HTML5", slug: "html5", category: "Languages" },
+  { name: "CSS3", slug: "css3", category: "Languages" },
+  { name: "JavaScript", slug: "javascript", category: "Languages" },
+  { name: "TypeScript", slug: "typescript", category: "Languages" },
+  { name: "Python", slug: "python", category: "Languages" },
+  // Frontend
+  { name: "React", slug: "react", category: "Frontend" },
+  { name: "Next.js", slug: "nextdotjs", category: "Frontend" },
+  { name: "Tailwind CSS", slug: "tailwindcss", category: "Frontend" },
+  { name: "GSAP", slug: "greensock", category: "Frontend" },
+  { name: "Lenis", slug: "lenis", category: "Frontend" },
+  { name: "Zustand", slug: "zustand", category: "Frontend" },
+  // Backend
+  { name: "Node.js", slug: "nodedotjs", category: "Backend" },
+  { name: "Express", slug: "express", category: "Backend" },
+  { name: "MongoDB", slug: "mongodb", category: "Backend" },
+  { name: "Django", slug: "django", category: "Backend" },
+  { name: "Socket.io", slug: "socketdotio", category: "Backend" },
+  { name: "REST API", slug: "restapi", category: "Backend" },
+  // AI
+  { name: "MCP", slug: "mcp", category: "AI" },
+  { name: "Vapi", slug: "vapi", category: "AI" },
+  // Tools/Infra
+  { name: "Git", slug: "git", category: "Tools/Infra" },
+  { name: "GitHub", slug: "github", category: "Tools/Infra" },
+  { name: "Vercel", slug: "vercel", category: "Tools/Infra" },
+  { name: "Figma", slug: "figma", category: "Tools/Infra" },
+  { name: "Google Cloud", slug: "googlecloud", category: "Tools/Infra" },
+  { name: "Stripe", slug: "stripe", category: "Tools/Infra" },
+];
+
+const POOL_SIZE = 12;
+
 export default function WatchingCat() {
   const sectionRef = useRef<HTMLElement>(null);
   const catSvgRef = useRef<SVGSVGElement>(null);
@@ -20,6 +61,11 @@ export default function WatchingCat() {
   const bodyRef = useRef<SVGGElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Pool references for interactive Tech Stack Trail
+  const poolCardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const poolImgRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const poolTextRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   const [hintText, setHintText] = useState("I'M WATCHING YOUR CURSOR.");
   const [popupText, setPopupText] = useState("MEOW");
@@ -97,6 +143,13 @@ export default function WatchingCat() {
 
       let leftCenter = { x: 0, y: 0 };
       let rightCenter = { x: 0, y: 0 };
+
+      // Tech Stack Trail state
+      let lastTrailX = -9999;
+      let lastTrailY = -9999;
+      let poolIndex = 0;
+      let techIndex = 0;
+      let zIndexCounter = 20;
 
       const updateEyeCenters = () => {
         if (leftEyeWhiteRef.current) {
@@ -328,9 +381,99 @@ export default function WatchingCat() {
             });
           }
         }
+
+        // Spawn Tech Stack Trail Cards over the cat section
+        if (sectionRef.current) {
+          const rect = sectionRef.current.getBoundingClientRect();
+          if (
+            curX >= rect.left &&
+            curX <= rect.right &&
+            curY >= rect.top &&
+            curY <= rect.bottom
+          ) {
+            const relX = curX - rect.left;
+            const relY = curY - rect.top;
+
+            const dxTrail = relX - lastTrailX;
+            const dyTrail = relY - lastTrailY;
+            const distance = Math.hypot(dxTrail, dyTrail);
+
+            // Distance threshold (~65px between cards for smooth trail flow)
+            if (distance >= 65) {
+              lastTrailX = relX;
+              lastTrailY = relY;
+
+              const cardEl = poolCardRefs.current[poolIndex];
+              const imgEl = poolImgRefs.current[poolIndex];
+              const textEl = poolTextRefs.current[poolIndex];
+
+              if (cardEl && imgEl && textEl) {
+                const currentTech = STACK_LIST[techIndex];
+
+                imgEl.src = `/stack/${currentTech.slug}.svg`;
+                imgEl.alt = `${currentTech.name} logo`;
+                textEl.textContent = currentTech.name;
+
+                poolIndex = (poolIndex + 1) % POOL_SIZE;
+                techIndex = (techIndex + 1) % STACK_LIST.length;
+
+                const zIndex = ++zIndexCounter;
+                const randomRotation = gsap.utils.random(-8, 8);
+
+                gsap.killTweensOf(cardEl);
+
+                const cardTl = gsap.timeline();
+
+                cardEl.onmouseenter = () => {
+                  cardTl.pause();
+                  gsap.to(cardEl, { scale: 1.15, borderColor: "#ffffff", duration: 0.2 });
+                };
+                cardEl.onmouseleave = () => {
+                  gsap.to(cardEl, { scale: 1, borderColor: "rgba(255,255,255,0.3)", duration: 0.2 });
+                  cardTl.resume();
+                };
+                cardEl.onclick = () => {
+                  handleCatClick();
+                };
+
+                cardTl
+                  .set(cardEl, {
+                    display: "flex",
+                    x: relX,
+                    y: relY,
+                    xPercent: -50,
+                    yPercent: -50,
+                    rotation: randomRotation,
+                    zIndex,
+                    scale: 0.4,
+                    opacity: 0,
+                  })
+                  .to(cardEl, {
+                    scale: 1,
+                    opacity: 1,
+                    duration: 0.25,
+                    ease: "power3.out",
+                  })
+                  .to(cardEl, {
+                    opacity: 0,
+                    scale: 0.8,
+                    y: relY - 30,
+                    duration: 0.5,
+                    ease: "power2.in",
+                    delay: 0.5,
+                    onComplete: () => {
+                      gsap.set(cardEl, { display: "none" });
+                    },
+                  });
+              }
+            }
+          }
+        }
       };
 
       const handleMouseLeave = () => {
+        lastTrailX = -9999;
+        lastTrailY = -9999;
         returnEyesToCenter();
         scheduleIdleLooking();
       };
@@ -605,7 +748,7 @@ export default function WatchingCat() {
       <div className="relative flex-1 flex flex-col items-center justify-center w-full my-auto py-4">
         <div
           ref={popupRef}
-          className="absolute pointer-events-none opacity-0 z-30 font-mono-tech text-[11px] tracking-widest text-black bg-white px-3 py-1 font-bold select-none uppercase border border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]"
+          className="absolute pointer-events-none opacity-0 z-50 font-mono-tech text-[11px] tracking-widest text-black bg-white px-3 py-1 font-bold select-none uppercase border border-white shadow-[0_0_15px_rgba(255,255,255,0.5)]"
           style={{ top: "12%" }}
         >
           {popupText}
@@ -823,6 +966,45 @@ export default function WatchingCat() {
         </span>
         <span className="text-neutral-400 text-[10px] sm:text-xs">SWISS MONOCHROME</span>
       </div> */}
+      {/* INTERACTIVE TECH STACK TRAIL LAYER (Spawns along cursor on hover) */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 z-20 pointer-events-none overflow-hidden"
+      >
+        {Array.from({ length: POOL_SIZE }).map((_, idx) => (
+          <div
+            key={idx}
+            ref={(el) => {
+              poolCardRefs.current[idx] = el;
+            }}
+            style={{ display: "none" }}
+            className="absolute top-0 left-0 w-[100px] h-[100px] sm:w-[110px] sm:h-[110px] bg-neutral-950/90 border border-white/30 p-2.5 flex flex-col items-center justify-center select-none shadow-[0_12px_36px_rgba(0,0,0,0.9)] pointer-events-auto transition-colors duration-200 backdrop-blur-sm cursor-pointer"
+          >
+            <div className="w-10 h-10 flex items-center justify-center overflow-hidden">
+              <img
+                ref={(el) => {
+                  poolImgRefs.current[idx] = el;
+                }}
+                src="/stack/react.svg"
+                alt="Technology Logo"
+                width={38}
+                height={38}
+                className="w-9 h-9 object-contain filter invert pointer-events-none"
+                loading="lazy"
+              />
+            </div>
+
+            <span
+              ref={(el) => {
+                poolTextRefs.current[idx] = el;
+              }}
+              className="font-mono-tech text-[10px] font-bold uppercase tracking-wider text-neutral-200 mt-2 text-center truncate w-full block"
+            >
+              REACT
+            </span>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
