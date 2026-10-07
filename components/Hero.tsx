@@ -175,7 +175,7 @@ export default function Hero({ isLoaded }: HeroProps) {
             </p>
           </div> */}
 
-          <div className="flex justify-start md:justify-end">
+          {/* <div className="flex justify-start md:justify-end">
             <button
               onClick={() => scrollToTarget("#intro")}
               data-cursor="pointer"
@@ -184,7 +184,7 @@ export default function Hero({ isLoaded }: HeroProps) {
               <span>EXPLORE WORK</span>
               <span className="group-hover:translate-y-0.5 transition-transform">↓</span>
             </button>
-          </div>
+          </div> */}
         </div>
       </div>
 

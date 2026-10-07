@@ -143,7 +143,7 @@ export default function SelectedProjects() {
                      {project.subtitle}
                   </p>
 
-                  <p className="text-neutral-300 text-base md:text-lg leading-relaxed font-light mb-8">
+                  <p className="text-neutral-300 text-sm md:text-lg leading-relaxed font-light mb-8">
                     {project.description}
                   </p>
                 </div>

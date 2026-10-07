@@ -117,7 +117,7 @@ export default function Experience() {
                     </p>
                   </div>
 
-                  <p className="text-neutral-300 text-base md:text-lg leading-relaxed font-light">
+                  <p className="text-neutral-300 text-sm md:text-lg leading-relaxed font-light">
                     {exp.description}
                   </p>
 

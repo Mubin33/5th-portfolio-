@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import SmoothScroll from "@/components/SmoothScroll";
-import CustomCursor from "@/components/CustomCursor";
 import LoadingScreen from "@/components/LoadingScreen";
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
@@ -25,10 +24,8 @@ export default function Home() {
   return (
     <SmoothScroll>
       {/* Cinematic Initial Loading Screen */}
-      <LoadingScreen onComplete={() => setIsLoaded(true)} />
+      {/* <LoadingScreen onComplete={() => setIsLoaded(true)} /> */}
 
-      {/* Desktop Magnetic Custom Cursor */}
-      <CustomCursor />
 
       {/* Fixed Navigation & Fullscreen Menu */}
       <Navigation />
@@ -40,7 +37,7 @@ export default function Home() {
 
         {/* 03: About Me Section */}
         <About />
-        
+
         {/* 02: Introduction Section */}
         <Introduction />
 

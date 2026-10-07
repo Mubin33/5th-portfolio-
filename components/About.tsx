@@ -7,16 +7,62 @@ import { gsap } from "@/lib/gsap";
 export default function About() {
   const containerRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const numberRef = useRef<HTMLSpanElement>(null);
   const bioRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
   const imageFrameRef = useRef<HTMLDivElement>(null);
   const imageGlowRef = useRef<HTMLDivElement>(null);
 
+  // Divider and Image Layer Refs for Scroll-Driven Transition
+  const dividerLineRef = useRef<HTMLDivElement>(null);
+  const layerEditedRef = useRef<HTMLDivElement>(null);
+  const layerOriginalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const ctx = gsap.context(() => {
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (prefersReducedMotion) return;
+
+      // Pinned Scroll Section Transition: Divider moves from 0% (extreme left) to 100% (full right)
+      if (
+        containerRef.current &&
+        dividerLineRef.current &&
+        layerEditedRef.current &&
+        layerOriginalRef.current
+      ) {
+        const posObj = { pos: 0 };
+
+        const dividerTl = gsap.timeline({
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "+=380", // Snappy single scroll wheel flick to complete
+            pin: true,
+            pinSpacing: true,
+            scrub: 0.3,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        dividerTl.to(posObj, {
+          pos: 100,
+          ease: "none",
+          onUpdate: () => {
+            const p = posObj.pos;
+            if (dividerLineRef.current) {
+              dividerLineRef.current.style.left = `${p}%`;
+            }
+            if (layerEditedRef.current) {
+              // Left side of divider: Edited image reveals from 0% to p%
+              layerEditedRef.current.style.clipPath = `inset(0 ${100 - p}% 0 0)`;
+            }
+            if (layerOriginalRef.current) {
+              // Right side of divider: Original image reveals from p% to 100%
+              layerOriginalRef.current.style.clipPath = `inset(0 0 0 ${p}%)`;
+            }
+          },
+        });
+      }
 
       const borders = containerRef.current?.querySelectorAll(".animated-border");
       if (borders) {
@@ -44,22 +90,6 @@ export default function About() {
           opacity: 1,
           duration: 0.9,
           ease: "power3.out",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top 75%",
-          },
-        }
-      );
-
-      gsap.fromTo(
-        numberRef.current,
-        { rotation: -20, opacity: 0, scale: 0.8 },
-        {
-          rotation: 0,
-          opacity: 1,
-          scale: 1,
-          duration: 0.8,
-          ease: "back.out(1.7)",
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top 75%",
@@ -161,29 +191,23 @@ export default function About() {
     <section
       id="about"
       ref={containerRef}
-      className="relative py-28 md:py-40 px-6 md:px-12 border-b border-white/10 bg-black overflow-hidden"
+      className="relative min-h-screen py-16 md:py-24 px-6 md:px-12 border-b border-white/10 bg-black overflow-hidden flex flex-col justify-center"
     >
-      <div className="max-w-[1440px] mx-auto">
-        
+      <div className="max-w-[1440px] w-full mx-auto my-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
           {/* Left Column: Title, Narrative Bio, Stats & Meta */}
-          <div className="lg:col-span-6 flex flex-col gap-7">
-            <div>
-              {/* <div className="flex items-baseline gap-4 mb-3">
-                <span
-                  ref={numberRef}
-                  className="font-mono-tech text-4xl md:text-5xl font-bold text-neutral-400 select-none will-change-transform inline-block"
-                >
-                  01
-                </span>
-              </div>  */}
-            <h2 className="text-section-huge font-medium uppercase tracking-tighter text-white">
-          ABOUT ME
-        </h2>
-            </div>
+          <div className="order-2 lg:order-1 lg:col-span-6 flex flex-col gap-6">
+            {/* <div>
+              <h2
+                ref={titleRef}
+                className="text-section-huge font-medium uppercase tracking-tighter text-white will-change-transform"
+              >
+                ABOUT ME
+              </h2>
+            </div> */}
 
-            <div ref={bioRef} className="space-y-6 text-lg md:text-2xl text-neutral-300 font-light leading-relaxed">
-              <p className="text-white font-normal">
+            <div ref={bioRef} className="space-y-6 text-xl md:text-4xl text-neutral-300 font-light leading-7 lg:leading-12 -mt-7">
+              <p className="text-white font-medium italic">
                 I am <span className="font-semibold text-white decoration-white/40">MD. Yasin Arafat Mubin</span>, a Full-Stack developer who enjoys building modern web applications, interactive interfaces, and scalable digital experiences.
               </p>
               <p className="text-lg md:text-xl">
@@ -219,14 +243,14 @@ export default function About() {
                 <span className="text-neutral-400 block mb-2">{"//"} LOCATION</span>
                 <p className="text-white font-sans text-sm font-semibold">
                   DHAKA, BANGLADESH
-                </p> 
+                </p>
               </div>
 
               <div className="meta-box p-5 border border-white/10 bg-neutral-950/60">
                 <span className="text-neutral-400 block mb-2">{"//"} ROLE</span>
                 <p className="text-white font-sans text-sm font-semibold">
                   FULL STACK
-                </p> 
+                </p>
               </div>
 
               <div className="meta-box p-5 border border-white/10 bg-neutral-950/60">
@@ -241,19 +265,25 @@ export default function About() {
             </div>
           </div>
 
-          {/* Right Column: High-End Monochromatic Portrait with Radiant White Glow */}
+          {/* Right Column: High-End Scroll-Driven Before/After Portrait Transition */}
           <div
             ref={imageFrameRef}
-            className="lg:col-span-6 flex flex-col items-center justify-center will-change-transform mt-8 lg:mt-0"
+            className="order-1 lg:order-2 lg:col-span-6 flex flex-col items-center justify-center will-change-transform mt-0"
           >
             <div className="relative w-full max-w-[600px] aspect-[7/8] border border-white/20 bg-neutral-950/80 overflow-hidden group select-none">
               {/* Corner crosshairs */}
-              <span className="absolute top-2 left-2 text-xs font-mono-tech text-white/50 z-30 select-none">+</span>
-              <span className="absolute top-2 right-2 text-xs font-mono-tech text-white/50 z-30 select-none">+</span>
-              <span className="absolute bottom-2 left-2 text-xs font-mono-tech text-white/50 z-30 select-none">+</span>
-              <span className="absolute bottom-2 right-2 text-xs font-mono-tech text-white/50 z-30 select-none">+</span>
-
-              
+              <span className="absolute top-2 left-2 text-xs font-mono-tech text-white/50 z-30 select-none pointer-events-none">
+                {/* + */}
+              </span>
+              <span className="absolute top-2 right-2 text-xs font-mono-tech text-white/50 z-30 select-none pointer-events-none">
+                {/* + */}
+              </span>
+              <span className="absolute bottom-2 left-2 text-xs font-mono-tech text-white/50 z-30 select-none pointer-events-none">
+                {/* + */}
+              </span>
+              <span className="absolute bottom-2 right-2 text-xs font-mono-tech text-white/50 z-30 select-none pointer-events-none">
+                {/* + */}
+              </span>
 
               {/* RADIANT WHITE GLOW (Backlight halo behind Mubin) */}
               <div
@@ -273,24 +303,72 @@ export default function About() {
               {/* Subtle tech background grid pattern */}
               <div className="absolute inset-0 bg-grid-tech opacity-25 pointer-events-none z-0" />
 
-              {/* Developer Black & White Portrait */}
-              <div className="relative z-10 w-full h-full flex items-end justify-center pt-10">
+              {/* Top Mode Badges */}
+              {/* <div className="absolute top-3 left-4 right-4 z-30 flex justify-between items-center font-mono-tech text-[10px] tracking-widest uppercase pointer-events-none select-none">
+                <span className="px-2 py-0.5 border border-white/20 bg-black/75 text-neutral-300 backdrop-blur-sm">
+                  EDITED
+                </span>
+                <span className="px-2 py-0.5 border border-white/20 bg-black/75 text-white backdrop-blur-sm font-semibold">
+                  ORIGINAL
+                </span>
+              </div> */}
+
+              {/* LAYER 1 (Left Side of Divider): Edited Image with Dynamic Inset Clip Path */}
+              <div
+                ref={layerEditedRef}
+                className="absolute inset-0 z-10 w-full h-full flex items-end justify-center pt-10 pointer-events-none will-change-[clip-path]"
+                style={{
+                  clipPath: "inset(0 100% 0 0)",
+                }}
+              >
+                <Image
+                  src="/mubin_full_img_edited.png"
+                  alt="MD. Yasin Arafat Mubin (Edited)"
+                  width={674}
+                  height={831}
+                  priority
+                  className="w-auto ml-3 h-[93%] object-contain object-bottom select-none pointer-events-none"
+                />
+              </div>
+
+              {/* LAYER 2 (Right Side of Divider): Original Image with Dynamic Inset Clip Path */}
+              <div
+                ref={layerOriginalRef}
+                className="absolute inset-0 z-10 w-full h-full flex items-end justify-center pt-10 pointer-events-none will-change-[clip-path]"
+                style={{
+                  clipPath: "inset(0 0 0 0%)",
+                }}
+              >
                 <Image
                   src="/mubin_full_img.png"
-                  alt="MD. Yasin Arafat Mubin"
+                  alt="MD. Yasin Arafat Mubin (Original)"
                   width={623}
                   height={698}
                   priority
-                  className="w-auto ml-16 h-[93%] object-contain object-bottom select-none transition-all duration-700 group-hover:scale-[1.025]"
-                  // style={{
-                  //   filter: "grayscale(100%) contrast(120%) brightness(1.05)",
-                  // }}
+                  className="w-auto ml-16 h-[93%] object-contain object-bottom select-none pointer-events-none"
                 />
               </div>
 
               {/* Seamless bottom fade into black */}
               <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-black via-black/85 to-transparent pointer-events-none z-20" />
- 
+
+              {/* SCROLL-DRIVEN VERTICAL DIVIDER LINE & LASER MARKER */}
+              <div
+                ref={dividerLineRef}
+                className="absolute top-0 bottom-0 z-30 pointer-events-none will-change-[left] flex items-center justify-center"
+                style={{
+                  left: "0%",
+                  transform: "translateX(-50%)",
+                }}
+              >
+                {/* Vertical Glowing Divider Line */}
+                <div className="w-[2px] h-full bg-white shadow-[0_0_10px_#ffffff,0_0_22px_#ffffff,0_0_40px_rgba(255,255,255,0.85)] relative" />
+
+                {/* Cybernetic Glowing Marker */}
+                {/* <div className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border border-white bg-black/90 backdrop-blur-md flex items-center justify-center shadow-[0_0_15px_#ffffff,0_0_30px_rgba(255,255,255,0.7)]">
+                  <div className="w-2 h-2 rounded-full bg-white" />
+                </div> */}
+              </div>
             </div>
           </div>
         </div>

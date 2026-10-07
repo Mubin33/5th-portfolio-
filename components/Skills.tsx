@@ -56,11 +56,11 @@ export default function Skills() {
       className="relative py-28 md:py-40 border-b border-white/10 bg-black overflow-hidden"
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 mb-16">
-        <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
+        {/* <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
           <span className="text-white font-bold">02</span>
           <span className="w-8 h-[1px] bg-white/30" />
           <span>TECHNICAL ARSENAL</span>
-        </div>
+        </div> */}
         <h2 className="text-section-huge font-bold uppercase tracking-tighter text-white">
           SKILLS &<br />EXPERTISE
         </h2>

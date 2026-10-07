@@ -77,7 +77,7 @@
 
 /* Responsive clamp typography */
 .text-hero-giant {
-  font-size: clamp(2.2rem, 9.5vw, 11rem);
+  font-size: clamp(2.8rem, 9.5vw, 11rem);
   line-height: 0.88;
   letter-spacing: -0.04em;
   overflow-wrap: break-word;
