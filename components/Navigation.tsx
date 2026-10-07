@@ -111,7 +111,7 @@ export default function Navigation() {
             className="group text-left flex items-center gap-3 select-none"
           >
             <span className="font-bold tracking-tight text-lg md:text-4xl text-white group-hover:tracking-wider transition-all duration-300">
-              {'<'} {DEVELOPER_INFO.shortName} {'/>'}
+              {'<'} MUBin {'/>'}
             </span>
           </button>
 
@@ -164,9 +164,9 @@ export default function Navigation() {
                   className="group w-full flex items-baseline justify-between text-left py-2 border-b border-white/5 hover:border-white/30 transition-colors"
                 >
                   <div className="flex items-baseline gap-4 md:gap-8">
-                    <span className="font-mono-tech text-xs md:text-sm text-neutral-500 group-hover:text-white transition-colors">
+                    {/* <span className="font-mono-tech text-xs md:text-sm text-neutral-500 group-hover:text-white transition-colors">
                       {item.number}
-                    </span>
+                    </span> */}
                     <span className="text-3xl md:text-6xl lg:text-7xl font-bold tracking-tighter uppercase group-hover:translate-x-3 transition-transform duration-300 ease-out">
                       {item.label}
                     </span>
@@ -199,7 +199,7 @@ export default function Navigation() {
               GITHUB
             </a>
             <a
-              href="https://linkedin.com/in/mubinulislam"
+              href="https://linkedin.com/in/md-yasin-arafat-mubin-web-developer"
               target="_blank"
               rel="noreferrer"
               data-cursor="link"

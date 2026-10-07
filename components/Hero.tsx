@@ -118,7 +118,7 @@ export default function Hero({ isLoaded }: HeroProps) {
           className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase"
         >
           <div className="flex items-center gap-3">
-            <span className="w-1.5 h-1.5 bg-white rounded-full inline-block" />
+            {/* <span className="w-1.5 h-1.5 bg-white rounded-full inline-block" /> */}
             <span>{DEVELOPER_INFO.title}</span>
           </div>
           <div className="flex items-center gap-4 text-neutral-500">

@@ -292,7 +292,7 @@ export default function About() {
             ref={imageFrameRef}
             className="order-1 lg:order-2 lg:col-span-6 flex flex-col items-center justify-center will-change-transform mt-0"
           >
-            <div className="relative w-full max-w-[600px] aspect-[7/8] border border-white/20 bg-neutral-950/80 overflow-hidden group select-none">
+            <div className="relative w-full max-w-[600px] aspect-[7/8] overflow-hidden group select-none">
               {/* Corner crosshairs */}
               <span className="absolute top-2 left-2 text-xs font-mono-tech text-white/50 z-30 select-none pointer-events-none">
                 {/* + */}
@@ -349,7 +349,7 @@ export default function About() {
                   width={674}
                   height={831}
                   priority
-                  className="w-auto ml-3 h-[93%] object-contain object-bottom select-none pointer-events-none"
+                  className="w-auto ml-3 h-[99%] object-contain object-bottom select-none pointer-events-none"
                 />
               </div>
 
@@ -364,10 +364,10 @@ export default function About() {
                 <Image
                   src="/mubin_full_img.png"
                   alt="MD. Yasin Arafat Mubin (Original)"
-                  width={623}
-                  height={698}
+                  width={674}
+                  height={831}
                   priority
-                  className="w-auto ml-16 h-[93%] object-contain object-bottom select-none pointer-events-none"
+                  className="w-auto ml-16 h-[98%] object-contain object-bottom select-none pointer-events-none"
                 />
               </div>
 
