@@ -38,11 +38,12 @@ export default function Home() {
         {/* 01: Hero Section */}
         <Hero isLoaded={isLoaded} />
 
+        {/* 03: About Me Section */}
+        <About />
+        
         {/* 02: Introduction Section */}
         <Introduction />
 
-        {/* 03: About Me Section */}
-        <About />
 
         {/* 04: Skills & Kinetic Typography */}
         <Skills />

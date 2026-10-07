@@ -105,9 +105,9 @@ export default function Skills() {
       <div className="max-w-7xl mx-auto px-6 md:px-12 mt-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-5 flex flex-col gap-2">
-            <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase mb-4">
+            {/* <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase mb-4">
               {"//"} SELECT DOMAIN
-            </span>
+            </span> */}
             {SKILL_CATEGORIES.map((cat, idx) => (
               <button
                 key={cat.number}
@@ -126,7 +126,7 @@ export default function Skills() {
                   </span>
                 </div>
                 <span className="font-mono-tech text-xs">
-                  {activeCategory === idx ? "ACTIVE →" : "+"}
+                  {activeCategory === idx ? " →" : "+"}
                 </span>
               </button>
             ))}
@@ -134,10 +134,10 @@ export default function Skills() {
 
           <div className="lg:col-span-7 border border-white/10 p-8 md:p-12 bg-neutral-950/80 flex flex-col justify-between min-h-[340px]">
             <div>
-              <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
+              {/* <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
                 <span>CATEGORY {"//"} {SKILL_CATEGORIES[activeCategory].number}</span>
                 <span>PRODUCTION READY</span>
-              </div>
+              </div> */}
               <h3 className="text-2xl md:text-3xl font-bold uppercase text-white tracking-tight mb-4">
                 {SKILL_CATEGORIES[activeCategory].title}
               </h3>

@@ -47,10 +47,10 @@ export default function TechStack() {
       ref={containerRef}
       className="relative py-20 border-b border-white/10 bg-black overflow-hidden select-none"
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 mb-8 flex justify-between items-center font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
+      {/* <div className="max-w-7xl mx-auto px-6 md:px-12 mb-8 flex justify-between items-center font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
         <span>09 // COMPREHENSIVE RUNTIMES & PROTOCOLS</span>
         <span className="hidden sm:inline">HOVER TO DECELERATE</span>
-      </div>
+      </div> */}
 
       {/* Infinite Marquee Strip */}
       <div

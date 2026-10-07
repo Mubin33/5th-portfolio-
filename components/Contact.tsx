@@ -159,11 +159,11 @@ export default function Contact() {
     >
       <div className="max-w-7xl mx-auto flex flex-col justify-between">
         {/* Section Header */}
-        <div className="flex items-center gap-4 mb-16 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
+        {/* <div className="flex items-center gap-4 mb-16 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
           <span className="text-white font-bold">10</span>
           <span className="w-8 h-[1px] bg-white/30" />
           <span>INITIALIZE CONTACT // TRANSMISSION GATE</span>
-        </div>
+        </div> */}
 
         {/* Climax Headline */}
         <h2

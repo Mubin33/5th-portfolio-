@@ -70,18 +70,18 @@ export default function AISection() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20 border-b border-white/10 pb-8">
           <div>
-            <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
+            {/* <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
               <span className="text-white font-bold">08</span>
               <span className="w-8 h-[1px] bg-white/30" />
               <span>FRONTIER WORKFLOWS</span>
-            </div>
+            </div> */}
             <h2 className="text-section-huge font-bold uppercase tracking-tighter text-white">
               BUILDING<br />WITH AI
             </h2>
           </div>
-          <p className="font-mono-tech text-xs tracking-wider text-neutral-400 max-w-sm uppercase">
+          {/* <p className="font-mono-tech text-xs tracking-wider text-neutral-400 max-w-sm uppercase">
             {"//"} MODEL CONTEXT PROTOCOL (MCP), AGENTIC CODING PIPELINES, AND AUTOMATED TELEMETRY
-          </p>
+          </p> */}
         </div>
 
         <div
@@ -95,9 +95,9 @@ export default function AISection() {
                 <span className="w-2.5 h-2.5 rounded-full bg-white/30" />
                 <span className="w-2.5 h-2.5 rounded-full bg-white/30" />
               </div>
-              <span className="text-white font-bold tracking-wider">
-                MCP_AGENTIC_HOST_DAEMON {"//"} v2.4
-              </span>
+              {/* <span className="text-white font-bold tracking-wider">
+                MCP_AGENTIC_HOST_DAEMON 
+              </span> */}
             </div>
 
             <div className="flex flex-wrap gap-2">

@@ -64,11 +64,11 @@ export default function ProjectShowcase() {
       ref={sectionRef}
       className="relative min-h-screen bg-black overflow-hidden border-b border-white/10 flex flex-col justify-between py-12"
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 w-full flex items-center justify-between border-b border-white/10 pb-6">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 w-full flex items-center justify-between">
         <div className="flex items-center gap-4 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
-          <span className="text-white font-bold">05</span>
+          {/* <span className="text-white font-bold">05</span>
           <span className="w-8 h-[1px] bg-white/30" />
-          <span>SIGNATURE SHOWCASE</span>
+          <span>SIGNATURE SHOWCASE</span> */}
         </div>
         <div className="font-mono-tech text-xs text-neutral-400 tracking-wider flex items-center gap-2">
           <span>SCROLL DOWN TO TRAVERSE</span>
@@ -82,9 +82,9 @@ export default function ProjectShowcase() {
           className="flex gap-8 md:gap-14 px-6 md:px-16 w-max will-change-transform items-center"
         >
           <div className="w-[82vw] max-w-[340px] md:w-[420px] flex-shrink-0 flex flex-col justify-center pr-4 md:pr-6">
-            <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase mb-4">
+            {/* <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase mb-4">
               {"//"} ARCHITECTURAL EXHIBIT
-            </span>
+            </span> */}
             <h3 className="text-4xl md:text-6xl font-bold uppercase tracking-tighter text-white leading-none mb-6">
               SYSTEMS IN MOTION
             </h3>
@@ -145,9 +145,9 @@ export default function ProjectShowcase() {
           ))}
 
           <div className="w-[80vw] max-w-[300px] flex-shrink-0 border border-white/10 p-6 md:p-8 flex flex-col justify-center text-center">
-            <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase mb-4">
+            {/* <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase mb-4">
               {"//"} MORE IN REPOSITORIES
-            </span>
+            </span> */}
             <p className="text-xl font-bold uppercase text-white mb-4">
               EXPLORE OPEN CODE
             </p>

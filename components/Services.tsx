@@ -44,18 +44,18 @@ export default function Services() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20 border-b border-white/10 pb-8">
           <div>
-            <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
+            {/* <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
               <span className="text-white font-bold">07</span>
               <span className="w-8 h-[1px] bg-white/30" />
               <span>CAPABILITIES</span>
-            </div>
+            </div> */}
             <h2 className="text-section-huge font-bold uppercase tracking-tighter text-white">
               ENGINEERING<br />SERVICES
             </h2>
           </div>
-          <p className="font-mono-tech text-xs tracking-wider text-neutral-400 max-w-sm uppercase">
+          {/* <p className="font-mono-tech text-xs tracking-wider text-neutral-400 max-w-sm uppercase">
             {"//"} SPECIALIZED DISCIPLINES AVAILABLE FOR CONTRACTS & ARCHITECTURAL CONSULTING
-          </p>
+          </p> */}
         </div>
 
         <div className="divide-y divide-white/10">

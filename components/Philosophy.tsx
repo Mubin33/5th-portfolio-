@@ -60,13 +60,13 @@ export default function Philosophy() {
     >
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-24 border-b border-white/10 pb-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
           <div>
-            <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
+            {/* <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
               <span className="text-white font-bold">06</span>
               <span className="w-8 h-[1px] bg-white/30" />
               <span>CORE DISCIPLINE</span>
-            </div>
+            </div> */}
             <h2 className="text-section-huge font-bold uppercase tracking-tighter text-white">
               HOW I<br />BUILD
             </h2>

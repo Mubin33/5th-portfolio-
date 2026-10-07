@@ -50,11 +50,11 @@ export default function Introduction() {
       className="relative py-28 md:py-44 px-6 md:px-12 border-b border-white/10 bg-black overflow-hidden"
     >
       <div className="max-w-7xl mx-auto flex flex-col justify-between">
-        <div className="flex items-center gap-4 mb-12 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
+        {/* <div className="flex items-center gap-4 mb-12 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
           <span className="text-white font-bold">00</span>
           <span className="w-8 h-[1px] bg-white/30" />
           <span>PHILOSOPHICAL PREMISE</span>
-        </div>
+        </div> */}
 
         <h2
           ref={textRef}

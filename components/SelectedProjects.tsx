@@ -105,18 +105,18 @@ export default function SelectedProjects() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-24 border-b border-white/10 pb-8">
           <div>
-            <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
+            {/* <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
               <span className="text-white font-bold">04</span>
               <span className="w-8 h-[1px] bg-white/30" />
               <span>INDEXED WORKS</span>
-            </div>
+            </div> */}
             <h2 className="text-section-huge font-bold uppercase tracking-tighter text-white">
               SELECTED<br />PROJECTS
             </h2>
           </div>
-          <p className="font-mono-tech text-xs tracking-wider text-neutral-400 max-w-sm uppercase">
+          {/* <p className="font-mono-tech text-xs tracking-wider text-neutral-400 max-w-sm uppercase">
             {"//"} COMPREHENSIVE ARCHITECTURES ENGINEERED FOR PRODUCTION PERFORMANCE
-          </p>
+          </p> */}
         </div>
 
         <div className="space-y-36 md:space-y-48">
@@ -140,7 +140,7 @@ export default function SelectedProjects() {
                     {project.title}
                   </h3>
                   <p className="font-mono-tech text-xs uppercase tracking-wider text-neutral-400 mb-6">
-                    {"//"} {project.subtitle}
+                     {project.subtitle}
                   </p>
 
                   <p className="text-neutral-300 text-base md:text-lg leading-relaxed font-light mb-8">

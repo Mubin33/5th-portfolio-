@@ -163,7 +163,7 @@ export default function About() {
       ref={containerRef}
       className="relative py-28 md:py-40 px-6 md:px-12 border-b border-white/10 bg-black overflow-hidden"
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1440px] mx-auto">
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
           {/* Left Column: Title, Narrative Bio, Stats & Meta */}
