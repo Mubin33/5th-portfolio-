@@ -11,6 +11,7 @@ import Skills from "@/components/Skills";
 import Experience from "@/components/Experience";
 import SelectedProjects from "@/components/SelectedProjects";
 import ProjectShowcase from "@/components/ProjectShowcase";
+import StackTrail from "@/components/StackTrail";
 import Philosophy from "@/components/Philosophy";
 import Services from "@/components/Services";
 import AISection from "@/components/AISection";
@@ -48,8 +49,15 @@ export default function Home() {
         {/* 05: Experience Timeline */}
         <Experience />
 
+        {/* Interactive Tech Stack Trail */}
+        <div className="hidden lg:block">
+        <StackTrail />
+        </div>
+
+
         {/* 06: Selected Projects (Vertical Viewport Presentations) */}
         <SelectedProjects />
+
 
         {/* 07: Project Showcase (Pinned Horizontal Traverse) */}
         <ProjectShowcase />

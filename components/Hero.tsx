@@ -122,7 +122,7 @@ export default function Hero({ isLoaded }: HeroProps) {
             <span>{DEVELOPER_INFO.title}</span>
           </div>
           <div className="flex items-center gap-4 text-neutral-500">
-            <span className="text-white">BANANI, DHAKA, BANGLADESH</span>
+            <span className="text-white">BANANI, DHAKA</span>
           </div>
         </div>
 

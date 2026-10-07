@@ -51,6 +51,14 @@ export default function About() {
             const p = posObj.pos;
             if (dividerLineRef.current) {
               dividerLineRef.current.style.left = `${p}%`;
+              // Smoothly fade out divider glow near edges (0% and 100%) so it hides cleanly behind the side shadows
+              let edgeAlpha = 1;
+              if (p <= 10) {
+                edgeAlpha = p / 10;
+              } else if (p >= 90) {
+                edgeAlpha = (100 - p) / 10;
+              }
+              dividerLineRef.current.style.opacity = `${Math.max(0, Math.min(1, edgeAlpha))}`;
             }
             if (layerEditedRef.current) {
               // Left side of divider: Edited image reveals from 0% to p%
@@ -371,25 +379,39 @@ export default function About() {
                 />
               </div>
 
-              {/* Seamless bottom fade into black */}
-              <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-black via-black/85 to-transparent pointer-events-none z-20" />
+              {/* Left & Right edge shadows to seamlessly conceal divider at endpoints */}
+              <div className="absolute top-0 bottom-0 left-0 w-12 sm:w-20 bg-gradient-to-r from-black via-black/80 to-transparent pointer-events-none z-40" />
+              <div className="absolute top-0 bottom-0 right-0 w-12 sm:w-20 bg-gradient-to-l from-black via-black/80 to-transparent pointer-events-none z-40" />
 
-              {/* SCROLL-DRIVEN VERTICAL DIVIDER LINE & LASER MARKER */}
+              {/* Seamless bottom fade into black */}
+              <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-black via-black/90 to-transparent pointer-events-none z-40" />
+
+              {/* SCROLL-DRIVEN RADIANT GLOW LIGHT BEAM */}
               <div
                 ref={dividerLineRef}
-                className="absolute top-0 bottom-0 z-30 pointer-events-none will-change-[left] flex items-center justify-center"
+                className="absolute top-0 bottom-0 z-30 pointer-events-none will-change-[left,opacity] flex items-center justify-center"
                 style={{
                   left: "0%",
                   transform: "translateX(-50%)",
+                  opacity: 0,
                 }}
               >
-                {/* Vertical Glowing Divider Line */}
-                <div className="w-[2px] h-full bg-white shadow-[0_0_10px_#ffffff,0_0_22px_#ffffff,0_0_40px_rgba(255,255,255,0.85)] relative" />
+                {/* 1. Wide Atmospheric Ambient Glow Aura */}
+                <div className="absolute w-28 sm:w-36 h-full bg-gradient-to-r from-transparent via-white/12 to-transparent blur-2xl" />
 
-                {/* Cybernetic Glowing Marker */}
-                {/* <div className="absolute top-1/2 -translate-y-1/2 w-8 h-8 rounded-full border border-white bg-black/90 backdrop-blur-md flex items-center justify-center shadow-[0_0_15px_#ffffff,0_0_30px_rgba(255,255,255,0.7)]">
-                  <div className="w-2 h-2 rounded-full bg-white" />
-                </div> */}
+                {/* 2. Soft Luminous Scan Blade (Covers the transition seam) */}
+                <div className="absolute w-12 sm:w-16 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent blur-md" />
+
+                {/* 3. Ethereal Vertical Photon Ray (Fades seamlessly at top and bottom) */}
+                {/* <div
+                  className="w-[1.5px] h-full bg-gradient-to-b from-transparent via-white to-transparent"
+                  style={{
+                    boxShadow: "0 0 10px 2px rgba(255, 255, 255, 0.75), 0 0 25px 5px rgba(255, 255, 255, 0.35)",
+                  }}
+                /> */}
+
+                {/* 4. Delicate Optical Center Light Spark */}
+                {/* <div className="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white blur-[0.5px] shadow-[0_0_12px_#ffffff,0_0_24px_rgba(255,255,255,0.9)]" /> */}
               </div>
             </div>
           </div>
