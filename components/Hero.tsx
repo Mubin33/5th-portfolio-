@@ -156,16 +156,16 @@ export default function Hero({ isLoaded }: HeroProps) {
           </h1>
         </div>
 
-        <div
+        {/* <div
           ref={metaBottomRef}
           className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-white/10 items-end font-mono-tech text-xs text-neutral-400 tracking-wider uppercase"
-        >
-          <div>
+        > */}
+          {/* <div>
             <span className="text-neutral-600 block mb-1">DISCIPLINE</span>
             <p className="text-white font-sans text-sm font-medium">
               Frontend Architecture & Creative Motion
             </p>
-          </div>
+          </div> */}
 
           {/* <div>
             <span className="text-neutral-600 block mb-1">STATUS</span>
@@ -185,7 +185,7 @@ export default function Hero({ isLoaded }: HeroProps) {
               <span className="group-hover:translate-y-0.5 transition-transform">↓</span>
             </button>
           </div> */}
-        </div>
+        {/* </div> */}
       </div>
 
       <div
