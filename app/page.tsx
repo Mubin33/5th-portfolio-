@@ -16,6 +16,7 @@ import Philosophy from "@/components/Philosophy";
 import Services from "@/components/Services";
 import AISection from "@/components/AISection";
 import TechStack from "@/components/TechStack";
+import WatchingCat from "@/components/WatchingCat";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
@@ -41,6 +42,9 @@ export default function Home() {
 
         {/* 02: Introduction Section */}
         <Introduction />
+
+        {/* 12: Interactive Watching Cat */}
+        <WatchingCat />
 
 
         {/* 04: Skills & Kinetic Typography */}
@@ -74,7 +78,8 @@ export default function Home() {
         {/* 11: Continuous Tech Stack Marquee */}
         <TechStack />
 
-        {/* 12: Climax Contact Section */}
+
+        {/* 13: Climax Contact Section */}
         <Contact />
       </main>
 

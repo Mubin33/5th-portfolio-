@@ -357,7 +357,7 @@ export default function About() {
                   width={674}
                   height={831}
                   priority
-                  className="w-auto ml-3 h-[99%] object-contain object-bottom select-none pointer-events-none"
+                  className="w-auto ml-8 lg:ml-3 h-[98%] object-contain object-bottom select-none pointer-events-none"
                 />
               </div>
 
