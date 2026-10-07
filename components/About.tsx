@@ -237,30 +237,52 @@ export default function About() {
 
             <div
               ref={metaRef}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-5 font-mono-tech text-xs uppercase tracking-wider"
+              className="flex flex-col gap-4 font-mono-tech text-xs uppercase tracking-wider"
             >
-              <div className="meta-box p-5 border border-white/10 bg-neutral-950/60">
-                <span className="text-neutral-400 block mb-2">{"//"} LOCATION</span>
-                <p className="text-white font-sans text-sm font-semibold">
-                  DHAKA, BANGLADESH
-                </p>
-              </div>
+              {/* <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="meta-box p-4 border border-white/10 bg-neutral-950/60">
+                  <span className="text-neutral-400 block mb-2">{"//"} LOCATION</span>
+                  <p className="text-white font-sans text-sm font-semibold">
+                    DHAKA, BANGLADESH
+                  </p>
+                </div>
 
-              <div className="meta-box p-5 border border-white/10 bg-neutral-950/60">
-                <span className="text-neutral-400 block mb-2">{"//"} ROLE</span>
-                <p className="text-white font-sans text-sm font-semibold">
-                  FULL STACK
-                </p>
-              </div>
+                <div className="meta-box p-4 border border-white/10 bg-neutral-950/60">
+                  <span className="text-neutral-400 block mb-2">{"//"} ROLE</span>
+                  <p className="text-white font-sans text-sm font-semibold">
+                    FULL STACK
+                  </p>
+                </div>
 
-              <div className="meta-box p-5 border border-white/10 bg-neutral-950/60">
-                <span className="text-neutral-400 block mb-2">{"//"} FOCUS</span>
-                <p className="text-white font-sans text-sm font-semibold">
-                  REACT / NEXT.JS / GSAP / DJANGO / NODE
-                </p>
-                <span className="text-neutral-400 text-[11px] block mt-1">
-                  AI WORKFLOWS & MCP
-                </span>
+                <div className="meta-box p-4 border border-white/10 bg-neutral-950/60">
+                  <span className="text-neutral-400 block mb-2">{"//"} FOCUS</span>
+                  <p className="text-white font-sans text-sm font-semibold">
+                    REACT / NEXT.JS / GSAP / DJANGO / NODE
+                  </p>
+                  <span className="text-neutral-400 text-[11px] block mt-1">
+                    AI WORKFLOWS & MCP
+                  </span>
+                </div>
+              </div> */}
+
+              {/* Education Box */}
+              <div className="meta-box p-4 sm:p-5 border border-white/10 bg-neutral-950/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div> 
+                  <p className="text-white font-sans text-sm sm:text-base font-semibold normal-case">
+                    BSc in Computer Science and Engineering
+                  </p>
+                  <p className="text-neutral-300 text-xs font-mono-tech mt-1 tracking-wide normal-case">
+                    Northern University Bangladesh
+                  </p>
+                  <span className="text-neutral-500 text-[11px] block font-mono-tech mt-0.5 tracking-normal normal-case">
+                    Dakshinkhan, Dhaka-1230
+                  </span>
+                </div>
+                <div className="self-start sm:self-center">
+                  <span className="inline-block px-2.5 py-1 text-[10px] font-mono-tech uppercase tracking-widest text-white/80 border border-white/20 bg-white/5">
+                    CSE
+                  </span>
+                </div>
               </div>
             </div>
           </div>
