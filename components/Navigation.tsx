@@ -11,6 +11,8 @@ export default function Navigation() {
   const navBarRef = useRef<HTMLElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const linksContainerRef = useRef<HTMLUListElement>(null);
+  const [isCvOpen, setIsCvOpen] = useState(false);
+  const cvBackdropRef = useRef<HTMLDivElement>(null);
 
   const menuItems = [
     { number: "01", label: "HOME", target: "#hero" },
@@ -40,8 +42,13 @@ export default function Navigation() {
     const overlay = overlayRef.current;
     const links = linksContainerRef.current?.querySelectorAll("li");
 
-    if (isOpen) {
+    if (isOpen || isCvOpen) {
       document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    if (isOpen) {
       gsap.killTweensOf([overlay, links]);
 
       gsap.set(overlay, { display: "flex", clipPath: "inset(0% 0% 100% 0%)" });
@@ -66,7 +73,6 @@ export default function Navigation() {
         );
       }
     } else {
-      document.body.style.overflow = "";
       if (overlay) {
         gsap.to(overlay, {
           clipPath: "inset(0% 0% 100% 0%)",
@@ -80,13 +86,17 @@ export default function Navigation() {
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        setIsOpen(false);
+      if (e.key === "Escape") {
+        if (isCvOpen) {
+          setIsCvOpen(false);
+        } else if (isOpen) {
+          setIsOpen(false);
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, isCvOpen]);
 
   const handleLinkClick = (target: string) => {
     setIsOpen(false);
@@ -125,15 +135,26 @@ export default function Navigation() {
             </span>
           </div> */}
 
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            data-cursor="pointer"
-            className="flex items-center gap-2 text-xs font-mono-tech tracking-widest text-white uppercase border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-all duration-200"
-            aria-label="Toggle Navigation Menu"
-            aria-expanded={isOpen}
-          >
-            <span>{isOpen ? "CLOSE [ × ]" : "MENU [ + ]"}</span>
-          </button>
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <button
+              onClick={() => setIsCvOpen(true)}
+              data-cursor="pointer"
+              className="flex items-center gap-1.5 text-xs font-mono-tech tracking-widest text-white uppercase border border-white/20 px-3.5 py-2 hover:bg-white hover:text-black transition-all duration-200"
+              aria-label="View Resume and Curriculum Vitae"
+            >
+              <span>CV  ↗</span>
+            </button>
+
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              data-cursor="pointer"
+              className="flex items-center gap-2 text-xs font-mono-tech tracking-widest text-white uppercase border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-all duration-200"
+              aria-label="Toggle Navigation Menu"
+              aria-expanded={isOpen}
+            >
+              <span>{isOpen ? "CLOSE  ×" : "MENU  + "}</span>
+            </button>
+          </div>
         </div>
       </header>
 
@@ -181,7 +202,18 @@ export default function Navigation() {
         </div>
 
         <div className="max-w-7xl mx-auto w-full pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between gap-4 font-mono-tech text-xs text-neutral-400 tracking-wider">
-          <div className="flex flex-wrap gap-6">
+          <div className="flex flex-wrap items-center gap-6">
+            <button
+              onClick={() => {
+                setIsOpen(false);
+                setIsCvOpen(true);
+              }}
+              data-cursor="link"
+              className="text-white hover:underline flex items-center gap-1 uppercase tracking-wider font-semibold"
+            >
+              <span>CV</span>
+              <span>↗</span>
+            </button>
             <a
               href="mailto:mubinulislam14@gmail.com"
               data-cursor="link"
@@ -211,6 +243,72 @@ export default function Navigation() {
           <div>© 2026 MD. YASIN ARAFAT MUBIN</div>
         </div>
       </div>
+      {/* CV / RESUME VIEWER MODAL */}
+      {isCvOpen && (
+        <div
+          ref={cvBackdropRef}
+          onClick={(e) => {
+            if (e.target === cvBackdropRef.current) {
+              setIsCvOpen(false);
+            }
+          }}
+          className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 md:p-8 select-none"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Curriculum Vitae Preview Modal"
+        >
+          <div className="relative w-full max-w-5xl h-[88vh] md:h-[92vh] bg-black border border-white/20 flex flex-col shadow-[0_25px_70px_rgba(0,0,0,0.95)] overflow-hidden">
+            {/* Modal Header */}
+            <div className="flex items-center justify-end px-4 sm:px-6 py-3.5 border-b border-white/15 bg-neutral-950 font-mono-tech text-xs tracking-wider">
+              {/* <div className="flex items-center gap-3">
+                <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                <span className="text-white font-semibold uppercase">
+                  DOCUMENT // CV_PREVIEW
+                </span>
+                <span className="hidden sm:inline text-neutral-500">
+                  [ MD. YASIN ARAFAT MUBIN ]
+                </span>
+              </div> */}
+
+              <div className="flex items-center gap-2 sm:gap-3">
+                <a
+                  href="https://drive.google.com/file/d/1F5559vAFENl5vzMYjnAP5CaLW38cxdAt/view?usp=sharing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 border border-white/20 text-[11px] text-neutral-300 hover:text-black hover:bg-white transition-all uppercase"
+                >
+                  <span>OPEN NEW TAB</span>
+                  <span>↗</span>
+                </a>
+
+                <button
+                  onClick={() => setIsCvOpen(false)}
+                  className="px-3 py-1.5 border border-white/20 text-[11px] text-white hover:text-black hover:bg-white transition-all uppercase font-bold"
+                  aria-label="Close CV Modal"
+                >
+                  CLOSE ×
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body: Embedded Google Drive Preview Frame */}
+            <div className="relative flex-1 w-full h-full bg-neutral-900 overflow-hidden">
+              <iframe
+                src="https://drive.google.com/file/d/1F5559vAFENl5vzMYjnAP5CaLW38cxdAt/preview"
+                title="MD. Yasin Arafat Mubin CV Preview"
+                className="w-full h-full border-0"
+                allow="autoplay"
+              />
+            </div>
+
+            {/* Modal Footer / Telemetry Bar */}
+            {/* <div className="px-4 sm:px-6 py-2.5 border-t border-white/10 bg-black flex flex-col sm:flex-row items-center justify-between gap-2 font-mono-tech text-[10px] text-neutral-400 uppercase tracking-widest">
+              <span>DHAKA, BANGLADESH • FRONTEND ARCHITECTURE & CREATIVE MOTION</span>
+              <span>PRESS [ ESC ] OR CLICK OUTSIDE TO CLOSE</span>
+            </div> */}
+          </div>
+        </div>
+      )}
     </>
   );
 }
