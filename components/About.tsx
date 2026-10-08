@@ -202,7 +202,7 @@ export default function About() {
       ref={containerRef}
       className="relative min-h-screen py-16 md:py-24 px-6 md:px-12 border-b border-white/10 bg-black overflow-hidden flex flex-col justify-center"
     >
-      <div className="max-w-[1440px] w-full mx-auto my-auto">
+      <div className="max-w-7xl w-full mx-auto my-auto">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
           {/* Left Column: Title, Narrative Bio, Stats & Meta */}
           <div className="order-2 lg:order-1 lg:col-span-6 flex flex-col gap-6">
@@ -215,7 +215,7 @@ export default function About() {
               </h2>
             </div> */}
 
-            <div ref={bioRef} className="space-y-6 text-xl md:text-4xl text-neutral-300 font-light leading-7 lg:leading-12 -mt-7">
+            <div ref={bioRef} className="space-y-6 text-xl md:text-3xl text-neutral-300 font-light leading-7 lg:leading-12 -mt-7">
               <p className="text-white font-medium italic">
                 I am <span className="font-semibold text-white decoration-white/40">MD. Yasin Arafat Mubin</span>, a Full-Stack developer who enjoys building modern web applications, interactive interfaces, and scalable digital experiences.
               </p>
@@ -347,7 +347,7 @@ export default function About() {
               {/* LAYER 1 (Left Side of Divider): Edited Image with Dynamic Inset Clip Path */}
               <div
                 ref={layerEditedRef}
-                className="absolute inset-0 z-10 w-full h-full flex items-end justify-center pt-10 pointer-events-none will-change-[clip-path]"
+                className="absolute mt-1 lg:mt-2 inset-0 z-10 w-full h-full flex items-end justify-center pt-10 pointer-events-none will-change-[clip-path]"
                 style={{
                   clipPath: "inset(0 100% 0 0)",
                 }}
@@ -358,7 +358,7 @@ export default function About() {
                   width={674}
                   height={831}
                   priority
-                  className="w-auto ml-8 lg:ml-3 h-[98%] object-contain object-bottom select-none pointer-events-none"
+                  className="w-auto ml-8 lg:ml-3 h-[100%] object-contain object-bottom select-none pointer-events-none"
                 />
               </div>
 

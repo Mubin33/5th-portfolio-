@@ -76,7 +76,7 @@ export default function Home() {
         <AISection />
 
         {/* 11: Continuous Tech Stack Marquee */}
-        <TechStack />
+        {/* <TechStack /> */}
 
 
         {/* 13: Climax Contact Section */}

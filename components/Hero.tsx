@@ -113,19 +113,6 @@ export default function Hero({ isLoaded }: HeroProps) {
       <div className="absolute inset-0 bg-grid-tech pointer-events-none opacity-40" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 w-full flex flex-col justify-between flex-grow">
-        <div
-          ref={metaTopRef}
-          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase"
-        >
-          <div className="flex items-center gap-3">
-            {/* <span className="w-1.5 h-1.5 bg-white rounded-full inline-block" /> */}
-            <span>{DEVELOPER_INFO.title}</span>
-          </div>
-          <div className="flex items-center gap-4 text-neutral-500">
-            <span className="text-white">BANANI, DHAKA</span>
-          </div>
-        </div>
-
         <div className="my-auto py-10 md:py-16">
           {/* <div className="overflow-hidden mb-2">
             <span className="block font-mono-tech text-xs md:text-sm tracking-widest text-neutral-400 uppercase">
@@ -154,6 +141,19 @@ export default function Hero({ isLoaded }: HeroProps) {
               </span>
             </div>
           </h1>
+        </div>
+
+        <div
+          ref={metaTopRef}
+          className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-t border-white/10 pt-6 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase"
+        >
+          <div className="flex items-center gap-3">
+            {/* <span className="w-1.5 h-1.5 bg-white rounded-full inline-block" /> */}
+            <span>{DEVELOPER_INFO.title}</span>
+          </div>
+          <div className="flex items-center gap-4 text-neutral-500">
+            <span className="text-white">BANANI, DHAKA</span>
+          </div>
         </div>
 
         {/* <div

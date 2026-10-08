@@ -121,7 +121,7 @@ export default function Navigation() {
             className="group text-left flex items-center gap-3 select-none"
           >
             <span className="font-bold tracking-tight text-lg md:text-4xl text-white group-hover:tracking-wider transition-all duration-300">
-              {'<'} MUBin {'/>'}
+              {'<'}  {'/>'}
             </span>
           </button>
 
@@ -272,6 +272,17 @@ export default function Navigation() {
 
               <div className="flex items-center gap-2 sm:gap-3">
                 <a
+                  href="/Mubin_Software_Developer_CV.pdf"
+                  download="Mubin_Software_Developer_CV.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 border border-white/20 text-[11px] text-neutral-300 hover:text-black hover:bg-white transition-all uppercase"
+                >
+                  <span>DOWNLOAD</span>
+                  <span>↓</span>
+                </a>
+
+                {/* <a
                   href="https://drive.google.com/file/d/1F5559vAFENl5vzMYjnAP5CaLW38cxdAt/view?usp=sharing"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -279,7 +290,7 @@ export default function Navigation() {
                 >
                   <span>OPEN NEW TAB</span>
                   <span>↗</span>
-                </a>
+                </a> */}
 
                 <button
                   onClick={() => setIsCvOpen(false)}

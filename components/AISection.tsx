@@ -273,7 +273,7 @@ export default function AISection() {
         {/* =========================
             MARQUEE
         ========================== */}
-        <div
+        {/* <div
           ref={marqueeRef}
           className="relative mt-24 overflow-hidden border-y border-white/10 py-6"
         >
@@ -292,7 +292,7 @@ export default function AISection() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         {/* =========================
             BOTTOM STATEMENT
@@ -304,9 +304,9 @@ export default function AISection() {
             of the final product.
           </p>
 
-          <span className="font-mono-tech text-[10px] uppercase tracking-[0.25em] text-neutral-600">
+          {/* <span className="font-mono-tech text-[10px] uppercase tracking-[0.25em] text-neutral-600">
             AI / ENGINEERING / AUTOMATION
-          </span>
+          </span> */}
         </div>
       </div>
     </section>
