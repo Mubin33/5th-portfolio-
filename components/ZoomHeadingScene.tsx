@@ -72,7 +72,8 @@ function findStrokePoint(
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   if (!ctx) return null;
 
-  ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+  const safeFontFamily = fontFamily && !fontFamily.includes("var(") ? fontFamily : "sans-serif";
+  ctx.font = `${fontWeight} ${fontSize}px ${safeFontFamily}`;
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
   const metrics = ctx.measureText(char);
@@ -249,20 +250,29 @@ export default function ZoomHeadingScene({
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  // Measure the STAGE itself (not window.innerHeight), so SVG units always match the pinned box
+  // Measure the stage itself (not window.innerHeight). h-svh is stable, so the mobile URL bar
+  // never changes this value and never rebuilds the ScrollTrigger in the middle of a scroll.
   useEffect(() => {
-    const el = stageRef.current;
-    if (!el || isReducedMotion) return;
-    const ro = new ResizeObserver(() => {
-      const w = el.clientWidth;
-      const h = el.clientHeight;
+    if (isReducedMotion) return;
+    let timer: ReturnType<typeof setTimeout>;
+    const measure = () => {
+      const el = stageRef.current;
+      if (!el) return;
+      const w = el.offsetWidth;
+      const h = el.offsetHeight;
       if (!w || !h) return;
-      setDimensions((prev) =>
-        prev.width === w && Math.abs(prev.height - h) < 2 ? prev : { width: w, height: h }
-      );
-    });
-    ro.observe(el);
-    return () => ro.disconnect();
+      setDimensions((prev) => (prev.width === w && prev.height === h ? prev : { width: w, height: h }));
+    };
+    const onResize = () => {
+      clearTimeout(timer);
+      timer = setTimeout(measure, 200);
+    };
+    measure();
+    window.addEventListener("resize", onResize, { passive: true });
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", onResize);
+    };
   }, [isReducedMotion]);
 
   // The scroll animation
@@ -313,7 +323,8 @@ export default function ZoomHeadingScene({
         Math.hypot(ox, vh - oy),
         Math.hypot(vw - ox, vh - oy)
       );
-      const lnFinal = Math.log((farthest / r) * (isMobile ? 1.1 : 1.15));
+      // If the point could not be found, do a gentle 3x zoom and let the overlay cross-fade (never a solid screen)
+      const lnFinal = found ? Math.log((farthest / r) * (isMobile ? 1.1 : 1.15)) : Math.log(3);
 
       // 4. Apply the zoom as an explicit matrix around (ox, oy).
       //    GSAP is NOT used on these SVG groups on purpose: its default SVG transform origin is
@@ -332,20 +343,20 @@ export default function ZoomHeadingScene({
         scrollTrigger: {
           trigger: stage,
           pin: true,
-          scrub: 1,
+          pinSpacing: true,
+          scrub: 0.5,
           start: "top top",
           end: `+=${isMobile ? SCROLL_MOBILE : SCROLL_DESKTOP}%`,
-          anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => onProgressRef.current?.(self.progress),
           onRefresh: (self) => onProgressRef.current?.(self.progress),
         },
       });
 
-      // Dive: accelerates into the letter
+      // Dive: eases in AND eases out, so there is no sudden rush at the end
       tl.to(
         proxy,
-        { z: 1, ease: "power1.in", duration: ZOOM_END, onUpdate: () => apply(proxy.z) },
+        { z: 1, ease: "sine.inOut", duration: ZOOM_END, onUpdate: () => apply(proxy.z) },
         0
       );
 
@@ -359,7 +370,7 @@ export default function ZoomHeadingScene({
         tl.fromTo(
           contentLayerRef.current,
           { scale: 1.15, opacity: 0.4 },
-          { scale: 1, opacity: 1, ease: "power2.out", duration: ZOOM_END },
+          { scale: 1, opacity: 1, ease: "power2.out", duration: ZOOM_END - 0.15 },
           0
         );
       }
@@ -374,9 +385,10 @@ export default function ZoomHeadingScene({
         );
       }
 
-      // Once the stroke covers the screen, drop the overlay completely (saves paint cost)
+      // Overlay cross-fades out in the last part of the zoom (invisible when the stroke already covers
+      // the screen, a soft fallback otherwise). autoAlpha also hides it afterwards to save paint cost.
       if (svgContainerRef.current) {
-        tl.set(svgContainerRef.current, { autoAlpha: 0 }, ZOOM_END);
+        tl.to(svgContainerRef.current, { autoAlpha: 0, ease: "none", duration: 0.1 }, ZOOM_END - 0.1);
       }
 
       // Short hold: the revealed content stays pinned for the last part of the scroll

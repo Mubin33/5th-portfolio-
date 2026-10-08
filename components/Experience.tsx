@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
@@ -46,6 +46,7 @@ export default function Experience() {
             duration: 0.8,
             stagger: 0.1,
             ease: "power3.out",
+            clearProps: "transform",
             scrollTrigger: {
               trigger: row,
               start: "top 85%",
@@ -67,18 +68,10 @@ export default function Experience() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-20 border-b border-white/10 pb-8">
           <div>
-            {/* <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
-              <span className="text-white font-bold">03</span>
-              <span className="w-8 h-[1px] bg-white/30" />
-              <span>CHRONOLOGICAL TRAJECTORY</span>
-            </div> */}
             <h2 className="text-section-huge font-bold uppercase tracking-tighter text-white">
               CAREER &<br />EXPERIENCE
             </h2>
           </div>
-          {/* <p className="font-mono-tech text-xs tracking-wider text-neutral-400 max-w-sm uppercase">
-            {"//"} A RECORD OF DISCIPLINE, CODE PRODUCTION, AND SYSTEM ARCHITECTURE
-          </p> */}
         </div>
 
         <div ref={itemsRef} className="relative pl-6 md:pl-10">
@@ -98,18 +91,22 @@ export default function Experience() {
               >
                 <div className="row-dot absolute -left-[27px] md:-left-[43px] top-1.5 w-3 h-3 rounded-full bg-black border-2 border-white" />
 
-                <div className="row-year lg:col-span-4 font-mono-tech">
-                  <span className="text-xl md:text-2xl font-bold text-white block tracking-tight">
-                    {exp.year}
-                  </span>
-                  <span className="text-xs text-neutral-400 tracking-widest uppercase block mt-1">
-                    {exp.location}
-                  </span>
+                {/* Left Date Column: Sticky for the full height of the row on lg+ devices */}
+                <div className="row-year lg:col-span-4 font-mono-tech lg:self-stretch">
+                  <div className="lg:sticky lg:top-28 space-y-2">
+                    <span className="text-xl md:text-2xl font-bold text-white block tracking-tight">
+                      {exp.year}
+                    </span>
+                    <span className="text-xs text-neutral-400 tracking-widest uppercase block mt-1">
+                      {exp.location}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="row-content lg:col-span-8 space-y-4">
+                {/* Right Content Column: Company, Role, Description, Responsibilities & Tech */}
+                <div className="row-content lg:col-span-8 space-y-5">
                   <div className="border-b border-white/10 pb-4">
-                    <h3 className="text-2xl md:text-4xl font-bold   text-white tracking-tight">
+                    <h3 className="text-2xl md:text-4xl font-bold text-white tracking-tight">
                       {exp.company}
                     </h3>
                     <p className="font-mono-tech text-sm text-neutral-300 mt-1 uppercase tracking-wider">
@@ -121,6 +118,30 @@ export default function Experience() {
                     {exp.description}
                   </p>
 
+                  {/* Responsibilities List */}
+                  {exp.responsibilities && exp.responsibilities.length > 0 && (
+                    <div className="space-y-3 pt-2">
+                      <h4 className="font-mono-tech text-base md:text-lg font-medium tracking-widest text-neutral-400 uppercase flex items-center gap-2">
+                        {/* <span className="w-1.5 h-1.5 bg-white rounded-full" /> */}
+                        <span>Key Responsibilities & Scope</span>
+                      </h4>
+                      <ul className="space-y-2.5">
+                        {exp.responsibilities.map((resp, rIdx) => (
+                          <li
+                            key={rIdx}
+                            className="flex items-start gap-3 text-neutral-300 text-sm md:text-base leading-relaxed font-light group"
+                          >
+                            <span className="text-neutral-500 font-mono-tech text-xs mt-1 shrink-0 select-none group-hover:text-white transition-colors">
+                              —
+                            </span>
+                            <span className="flex-1">{resp}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Technologies Tags */}
                   <div className="flex flex-wrap gap-2 pt-2">
                     {exp.technologies.map((tech, tIdx) => (
                       <span

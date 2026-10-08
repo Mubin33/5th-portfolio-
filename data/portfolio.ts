@@ -17,6 +17,7 @@ export interface Experience {
   role: string;
   location: string;
   description: string;
+  responsibilities: string[];
   technologies: string[];
 }
 
@@ -67,21 +68,21 @@ export const PROJECTS: Project[] = [
     year: "2025",
     description: "A mission-critical digital ecosystem engineered for military veterans, providing high-integrity benefits tracking, certified identity verification, and community networking. Built with Next.js App Router, TypeScript, and high-performance server actions.",
     technologies: [
-  "Next.js",
-  "TypeScript",
-  "Tailwind CSS",
-  "Node.js",
-  "Microservices",
-  "REST API",
-  "GSAP",
-  "VA.gov API",
-  "Lighthouse API",
-  "OneSignal",
-  "Stripe",
-  "Brevo",
-  "Sendbox",
-  "Vapi",
-],
+      "Next.js",
+      "TypeScript",
+      "Tailwind CSS",
+      "Node.js",
+      "Microservices",
+      "REST API",
+      "GSAP",
+      "VA.gov API",
+      "Lighthouse API",
+      "OneSignal",
+      "Stripe",
+      "Brevo",
+      "Sendbox",
+      "Vapi",
+    ],
     image: "/projects/valrpro.jpg",
     liveUrl: "https://valrpro.com",
     metrics: [
@@ -98,9 +99,9 @@ export const PROJECTS: Project[] = [
     year: "2024",
     description: "Comprehensive operational automation suite featuring live wash bay telemetry, queue scheduling, automated payment routing, and real-time chemical & power telemetry monitoring.",
     technologies: ["React", "Next.js", "TypeScript", "Node.js", "Tailwind CSS",
-  "Node.js",
-  "Microservices",
-  "REST API",],
+      "Node.js",
+      "Microservices",
+      "REST API",],
     image: "/projects/bright-carwash.jpg",
     liveUrl: "https://brightcarwash.com",
     metrics: [
@@ -165,7 +166,19 @@ export const EXPERIENCES: Experience[] = [
     company: "BeyondAI",
     role: "Software Developer",
     location: "Dhaka, Bangladesh",
-    description: "Architecting mission-critical frontend systems, high-converting digital products, and high-performance interactive interfaces with Next.js, TypeScript, and Tailwind CSS. Implementing micro-interactions, optimizing core web vitals, and collaborating with cross-functional product teams.",
+    description: "Working in a B2B-focused software development environment at BeyondAI, contributing to in-house SaaS products, ERP and HRM systems, AI-powered solutions, and custom software projects developed for clients and business partners based on their specific requirements. Responsible for building scalable and high-performance web applications, developing reusable UI architectures, integrating REST APIs and backend services, and delivering production-ready features from requirements to deployment. Experienced in developing complex frontend systems with Next.js, React, TypeScript, and Tailwind CSS, along with microservices, AI agents, and MCP-based workflows. Also involved in performance optimization, Core Web Vitals, responsive and interactive UI development, debugging, code review, codebase auditing, vulnerability analysis, and maintaining existing applications to ensure reliability, scalability, and long-term product quality.",
+    responsibilities: [
+      "Develop and maintain scalable web applications and business-focused software products.",
+      "Build responsive, interactive, and reusable frontend architectures using Next.js, React, TypeScript, and Tailwind CSS.",
+      "Translate business and client requirements into practical technical solutions and production-ready features.",
+      "Develop and contribute to SaaS, ERP, HRM, AI-powered, and client-specific software products.",
+      "Integrate REST APIs and backend services, manage application data, and implement complex business workflows.",
+      "Work with AI agents, MCP-based workflows, microservices, and third-party services across different projects.",
+      "Optimize application performance, Core Web Vitals, rendering, loading experience, and overall frontend reliability.",
+      "Perform debugging, code reviews, codebase audits, testing, and vulnerability/risk analysis.",
+      "Maintain existing applications, resolve production issues, and continuously improve code quality and system reliability.",
+      "Collaborate with developers, designers, product teams, and stakeholders throughout the development lifecycle."
+    ],
     technologies: ["Next.js", "React", "Python", "TypeScript", "Tailwind CSS", "Microfrontends", "REST APIs", "AI Agents", "MCP", "Google Cloud Platform", "Microservices"],
   },
   {
@@ -173,28 +186,55 @@ export const EXPERIENCES: Experience[] = [
     company: "Ryven.co",
     role: "Frontend Developer",
     location: "Remote / Dhaka",
-    description: "Developed high-conversion customer-facing web applications, client dashboards, and responsive component libraries. Spearheaded GSAP animation integrations and modern Swiss UI overhauls.",
+    description:
+      "Worked in a B2C-focused software development environment, contributing to customer-facing web applications, digital products, and interactive user experiences designed to improve engagement and conversion. Developed modern, responsive interfaces and client dashboards while translating UI/UX designs and business requirements into scalable frontend solutions. Focused on building reusable component systems, improving visual consistency, and delivering polished web experiences with modern interaction and motion design.",
+
+    responsibilities: [
+      "Develop responsive and high-conversion web applications using React, Next.js, and TypeScript.",
+      "Build reusable UI components, layouts, and frontend systems for scalable product development.",
+      "Translate Figma designs, UI/UX requirements, and business goals into production-ready interfaces.",
+      "Develop customer-facing applications and client dashboards with a strong focus on usability and conversion.",
+      "Implement GSAP-based animations, micro-interactions, and motion design to create engaging user experiences.",
+      "Lead frontend UI modernization and Swiss-style design overhauls across existing web applications.",
+      "Ensure responsive behavior, cross-browser compatibility, accessibility, and consistent visual implementation.",
+      "Optimize frontend performance, rendering, component structure, and overall user experience.",
+      "Collaborate with designers, developers, and stakeholders to refine requirements and deliver frontend features.",
+      "Maintain and improve existing applications through debugging, refactoring, and continuous UI/UX enhancements."
+    ],
     technologies: ["React", "Next.js", "TypeScript", "UI/UX Systems", "Motion Design", "Figma"],
   },
   {
-year: "2024",
-company: "Bdcalling",
-role: "Web Developer",
-location: "Dhaka, Bangladesh",
-description:
-"Delivered front-end development classes and mentored students in core web technologies and modern front-end practices. Also developed web applications and digital solutions for B2C clients based on their requirements. Contributed to EmptyBD, a social media and digital marketplace platform featuring community engagement, content sharing, real-time communication, and marketplace functionality. Implemented real-time social interactions and messaging using Socket.io and Zustand, Web Push notifications, and digital wallet features including deposits, withdrawals, and subscription management.",
-technologies: [
-"React",
-"Next.js",
-"JavaScript",
-"Socket.io",
-"Zustand",
-"Web Push",
-"MongoDB",
-"UI/UX",
-"Figma"
-],
-},
+    year: "2024",
+    company: "Bdcalling",
+    role: "Web Developer",
+    location: "Dhaka, Bangladesh", description:
+      "Worked in a web development and educational environment, delivering frontend development training and mentoring students in core web technologies and modern frontend practices. Alongside teaching and mentorship, contributed to B2C client projects by developing responsive web applications and digital solutions based on business and user requirements. Also contributed to EmptyBD, a social media and digital marketplace platform combining community engagement, content sharing, real-time communication, and marketplace functionality.",
+
+    responsibilities: [
+      "Deliver frontend development classes covering modern web development concepts, tools, and practical implementation.",
+      "Mentor students through hands-on projects, debugging, code review, and frontend development best practices.",
+      "Develop responsive and user-focused web applications for B2C clients based on project requirements.",
+      "Build reusable React and Next.js components and maintain scalable frontend structures.",
+      "Contribute to EmptyBD, a social media and digital marketplace platform with real-time and community-driven features.",
+      "Implement real-time messaging and social interactions using Socket.io and Zustand.",
+      "Develop Web Push notification functionality for real-time user engagement and updates.",
+      "Contribute to digital wallet features including deposits, withdrawals, and subscription management.",
+      "Integrate frontend applications with backend APIs and manage application data and state.",
+      "Collaborate with designers and developers to translate requirements and UI/UX designs into production-ready features.",
+      "Debug, maintain, and improve existing applications while ensuring usability, responsiveness, and code quality."
+    ],
+    technologies: [
+      "React",
+      "Next.js",
+      "JavaScript",
+      "Socket.io",
+      "Zustand",
+      "Web Push",
+      "MongoDB",
+      "UI/UX",
+      "Figma"
+    ],
+  },
 
   {
     year: "2023 — 2024",
@@ -202,6 +242,7 @@ technologies: [
     role: "Educational Instructor & Digital Coordination",
     location: "Dhaka, Bangladesh",
     description: "Islamic scholarship and educational management, institutional digital record keeping, structured syllabus delivery, and disciplined curriculum coordination.",
+    responsibilities: [],
     technologies: ["Instructional Mastery", "Discipline & Memory", "Information Systems", "Systematic Review"],
   },
   {
@@ -210,6 +251,7 @@ technologies: [
     role: "Quranic Studies & Academic Coordination",
     location: "Dhaka, Bangladesh",
     description: "Deep memorization mastery, phonetics precision, strict discipline, instructional guidance, and student accountability tracking with high focus.",
+    responsibilities: [],
     technologies: ["Attention to Detail", "High Discipline", "Vocal & Mnemonic Systems", "Patience & Grit"],
   },
 ];
