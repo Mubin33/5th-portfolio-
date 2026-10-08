@@ -56,6 +56,7 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
 
     // Initial ScrollTrigger refresh after DOM mounts
     const timer = setTimeout(() => {
+      ScrollTrigger.sort();
       ScrollTrigger.refresh();
     }, 400);
 

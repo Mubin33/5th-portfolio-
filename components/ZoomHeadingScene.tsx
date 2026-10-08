@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { useEffect, useId, useRef, useState } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
@@ -347,6 +347,8 @@ export default function ZoomHeadingScene({
           scrub: 0.5,
           start: "top top",
           end: `+=${isMobile ? SCROLL_MOBILE : SCROLL_DESKTOP}%`,
+          anticipatePin: 1,
+          refreshPriority: 15,
           invalidateOnRefresh: true,
           onUpdate: (self) => onProgressRef.current?.(self.progress),
           onRefresh: (self) => onProgressRef.current?.(self.progress),
@@ -394,7 +396,11 @@ export default function ZoomHeadingScene({
       // Short hold: the revealed content stays pinned for the last part of the scroll
       tl.to({}, { duration: 1 - ZOOM_END }, ZOOM_END);
 
-      rafId = requestAnimationFrame(() => ScrollTrigger.refresh());
+      ScrollTrigger.sort();
+      rafId = requestAnimationFrame(() => {
+        ScrollTrigger.sort();
+        ScrollTrigger.refresh();
+      });
     }, stage);
 
     return () => {
@@ -403,6 +409,8 @@ export default function ZoomHeadingScene({
       maskGroup.removeAttribute("transform");
       outlineGroup.removeAttribute("transform");
       measureEl.setAttribute("stroke-width", "1.5");
+      ScrollTrigger.sort();
+      ScrollTrigger.refresh();
     };
   }, [isFontReady, isReducedMotion, text, resolvedTargetIndex, fontSize, dimensions.width, dimensions.height]);
 

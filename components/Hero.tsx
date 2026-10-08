@@ -188,7 +188,7 @@ export default function Hero({ isLoaded }: HeroProps) {
         {/* </div> */}
       </div>
 
-      <div
+      {/* <div
         ref={tickerRef}
         className="relative z-10 w-full mt-12 overflow-hidden border-y border-white/10 bg-black/60 py-3.5 select-none"
       >
@@ -200,7 +200,7 @@ export default function Hero({ isLoaded }: HeroProps) {
             </span>
           ))}
         </div>
-      </div>
+      </div> */}
     </section>
   );
 }

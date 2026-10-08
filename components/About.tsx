@@ -40,6 +40,7 @@ export default function About() {
             pinSpacing: true,
             scrub: 0.3,
             anticipatePin: 1,
+            refreshPriority: 20,
             invalidateOnRefresh: true,
           },
         });

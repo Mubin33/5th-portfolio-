@@ -29,6 +29,8 @@ export default function ProjectShowcase() {
           end: () => `+=${track.scrollWidth - window.innerWidth + 400}`,
           pin: true,
           scrub: 1,
+          anticipatePin: 1,
+          refreshPriority: 10,
           invalidateOnRefresh: true,
         },
       });
