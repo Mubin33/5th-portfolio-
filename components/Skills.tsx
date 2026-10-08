@@ -1,113 +1,101 @@
-"use client";
+﻿"use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { SKILL_TRACK_1, SKILL_TRACK_2, SKILL_CATEGORIES } from "@/data/portfolio";
+import ZoomHeadingScene from "@/components/ZoomHeadingScene";
+
+// Change these two symbols to whatever you used before
+const SEP = "✦"; // separator between skills in the marquee
+const OPEN = "−"; // marker on the active category button
+
+// Each track renders 3 copies, so one copy = exactly 100/3 % of the track width
+const TRAVEL = 100 / 3;
 
 export default function Skills() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const track1Ref = useRef<HTMLDivElement>(null);
   const track2Ref = useRef<HTMLDivElement>(null);
+  const move1 = useRef<((v: number) => void) | null>(null);
+  const move2 = useRef<((v: number) => void) | null>(null);
   const [activeCategory, setActiveCategory] = useState(0);
 
+  // quickTo setters for the two tracks (created once, driven by the zoom scroll progress)
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (prefersReducedMotion) return;
+    const t1 = track1Ref.current;
+    const t2 = track2Ref.current;
+    if (!t1 || !t2) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-      if (track1Ref.current) {
-        gsap.to(track1Ref.current, {
-          xPercent: -35,
-          ease: "none",
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 1,
-          },
-        });
-      }
+    gsap.set(t1, { xPercent: 0 });
+    gsap.set(t2, { xPercent: -TRAVEL });
+    move1.current = gsap.quickTo(t1, "xPercent", { duration: 0.5, ease: "power3.out" });
+    move2.current = gsap.quickTo(t2, "xPercent", { duration: 0.5, ease: "power3.out" });
 
-      if (track2Ref.current) {
-        gsap.fromTo(
-          track2Ref.current,
-          { xPercent: -35 },
-          {
-            xPercent: 0,
-            ease: "none",
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 1,
-            },
-          }
-        );
-      }
-    }, containerRef.current ?? undefined);
-
-    return () => ctx.revert();
+    return () => {
+      move1.current = null;
+      move2.current = null;
+      gsap.set([t1, t2], { clearProps: "transform" });
+    };
   }, []);
 
+  // Called by ZoomHeadingScene while it is pinned: track 1 slides left, track 2 slides right
+  const handleProgress = useCallback((p: number) => {
+    move1.current?.(-TRAVEL * p);
+    move2.current?.(-TRAVEL * (1 - p));
+  }, []);
+
+  // This is what you see INSIDE the letters while zooming (and full screen at the end of the zoom)
+  const marquee = (
+    <div className="w-full space-y-3 md:space-y-4 select-none overflow-hidden py-4">
+      <div
+        ref={track1Ref}
+        className="flex w-max whitespace-nowrap will-change-transform text-4xl sm:text-6xl md:text-8xl font-extrabold uppercase tracking-tighter text-white"
+      >
+        {[...SKILL_TRACK_1, ...SKILL_TRACK_1, ...SKILL_TRACK_1].map((skill, idx) => (
+          <span key={idx} className="mx-5 inline-block">
+            {skill}
+            <span className="mx-5 text-neutral-600">{SEP}</span>
+          </span>
+        ))}
+      </div>
+
+      <div
+        ref={track2Ref}
+        className="flex w-max whitespace-nowrap will-change-transform text-4xl sm:text-6xl md:text-8xl font-extrabold uppercase tracking-tighter text-transparent"
+        style={{ WebkitTextStroke: "1.5px rgba(255, 255, 255, 0.85)" }}
+      >
+        {[...SKILL_TRACK_2, ...SKILL_TRACK_2, ...SKILL_TRACK_2].map((skill, idx) => (
+          <span key={idx} className="mx-5 inline-block">
+            {skill}
+            <span className="mx-5">{SEP}</span>
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
-    <section
+    <ZoomHeadingScene
       id="skills"
-      ref={containerRef}
-      className="relative py-28 md:py-40 border-b border-white/10 bg-black overflow-hidden"
+      text="SKILLS"
+      targetIndex={2}
+      subheading="& EXPERTISE"
+      // metaTop={
+      //   <div className="flex items-center gap-4 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
+      //     <span className="text-white font-bold">02</span>
+      //     <span className="w-8 h-[1px] bg-white/30" />
+      //     <span>TECHNICAL ARSENAL</span>
+      //   </div>
+      // }
+      previewContent={marquee}
+      onProgress={handleProgress}
+      className="border-b border-white/10"
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 mb-16">
-        {/* <div className="flex items-center gap-4 mb-3 font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
-          <span className="text-white font-bold">02</span>
-          <span className="w-8 h-[1px] bg-white/30" />
-          <span>TECHNICAL ARSENAL</span>
-        </div> */}
-        <h2 className="text-section-huge font-bold uppercase tracking-tighter text-white">
-          SKILLS &<br />EXPERTISE
-        </h2>
-      </div>
-
-      <div className="my-8 space-y-4 select-none overflow-hidden py-4 border-y border-white/10 bg-neutral-950/40">
-        <div
-          ref={track1Ref}
-          className="flex whitespace-nowrap will-change-transform text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-extrabold uppercase tracking-tighter text-transparent"
-          style={{ WebkitTextStroke: "1px rgba(255, 255, 255, 0.4)" }}
-        >
-          {[...SKILL_TRACK_1, ...SKILL_TRACK_1].map((skill, idx) => (
-            <span
-              key={idx}
-              data-cursor="explore"
-              className="mx-6 hover:text-white transition-colors duration-300 inline-block"
-            >
-              {skill}
-              <span className="mx-6 text-neutral-800">•</span>
-            </span>
-          ))}
-        </div>
-
-        <div
-          ref={track2Ref}
-          className="flex whitespace-nowrap will-change-transform text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-extrabold uppercase tracking-tighter text-transparent"
-          style={{ WebkitTextStroke: "1px rgba(255, 255, 255, 0.4)" }}
-        >
-          {[...SKILL_TRACK_2, ...SKILL_TRACK_2].map((skill, idx) => (
-            <span
-              key={idx}
-              data-cursor="explore"
-              className="mx-6 hover:text-white transition-colors duration-300 inline-block"
-            >
-              {skill}
-              <span className="mx-6 text-neutral-800">•</span>
-            </span>
-          ))}
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-6 md:px-12 mt-20">
+      {/* Domain selection and details grid: scrolls in after the zoom */}
+      <div className="max-w-7xl mx-auto px-6 md:px-12 py-24 md:py-36">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-5 flex flex-col gap-2">
-            {/* <span className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase mb-4">
-              {"//"} SELECT DOMAIN
-            </span> */}
+            
             {SKILL_CATEGORIES.map((cat, idx) => (
               <button
                 key={cat.number}
@@ -125,9 +113,7 @@ export default function Skills() {
                     {cat.title}
                   </span>
                 </div>
-                <span className="font-mono-tech text-xs">
-                  {activeCategory === idx ? " →" : "+"}
-                </span>
+                <span className="font-mono-tech text-xs">{activeCategory === idx ? OPEN : "+"}</span>
               </button>
             ))}
           </div>
@@ -159,6 +145,6 @@ export default function Skills() {
           </div>
         </div>
       </div>
-    </section>
+    </ZoomHeadingScene>
   );
 }

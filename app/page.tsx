@@ -48,7 +48,7 @@ export default function Home() {
 
 
         {/* 04: Skills & Kinetic Typography */}
-        <Skills />
+        {/* <Skills /> */}
 
         {/* 05: Experience Timeline */}
         <Experience />
