@@ -83,7 +83,7 @@ export const PROJECTS: Project[] = [
       "Sendbox",
       "Vapi",
     ],
-    image: "/projects/valrpro.jpg",
+    image: "/projects/valrpro-platform.jpg",
     liveUrl: "https://valrpro.com",
     metrics: [
       { label: "Active Veterans", value: "1,000+" },
@@ -102,7 +102,7 @@ export const PROJECTS: Project[] = [
       "Node.js",
       "Microservices",
       "REST API",],
-    image: "/projects/bright-carwash.jpg",
+    image: "/projects/bright-carwash-telemetry.jpg",
     liveUrl: "https://brightcarwash.com",
     metrics: [
       { label: "Telemetry Bays", value: "4 Active" },
@@ -129,7 +129,7 @@ export const PROJECTS: Project[] = [
     "Authentication",
     "Role-Based Access Control",
   ],
-  image: "/projects/count-trust.jpg",
+  image: "/projects/count-trust-platform.jpg",
   liveUrl: "https://counttrust.com",
   metrics: [
     { label: "Platform Type", value: "Voting & Elections" },
@@ -154,7 +154,7 @@ export const PROJECTS: Project[] = [
     "API Integration",
     "Reusable Components",
   ],
-  image: "/projects/meeting-schedule.jpg",
+  image: "/projects/meeting-schedule-package.jpg",
   liveUrl: "https://www.npmjs.com/",
   metrics: [
     { label: "Development", value: "Independently Built" },
@@ -170,7 +170,7 @@ export const PROJECTS: Project[] = [
     year: "2024",
     description: "High-speed multi-vendor e-commerce platform and community hub built with modern Next.js and MongoDB. Engineered with brutalist editorial UI, fast live search, and low-latency interaction loops.",
     technologies: ["Next.js", "TypeScript", "MongoDB", "Express", "Tailwind CSS"],
-    image: "/projects/emptybd.jpg",
+    image: "/projects/emptybd-marketplace.jpg",
     liveUrl: "https://emptybd.com",
     metrics: [
       { label: "Product Catalog", value: "12,000+ Items" },
@@ -186,7 +186,7 @@ export const PROJECTS: Project[] = [
     year: "2024",
     description: "Interactive quantum computing educational environment featuring dynamic quantum circuit visualizations, interactive browser code editors, and progressive mastery curriculum.",
     technologies: ["Next.js", "TypeScript", "Tailwind CSS", "Interactive Canvas", "Python"],
-    image: "/projects/empower-qubit.jpg",
+    image: "/projects/empower-qubit-lab.jpg",
     liveUrl: "https://empowerqubit.com",
     metrics: [
       { label: "Interactive Circuits", value: "24 Gates" },
@@ -202,7 +202,7 @@ export const PROJECTS: Project[] = [
     year: "2025",
     description: "Autonomous developer tooling suite leveraging Model Context Protocol (MCP), agentic multi-step code refactoring, automated security audit pipelines, and LLM context management.",
     technologies: ["TypeScript", "Python", "MCP", "AI Agents", "Next.js", "Tailwind CSS"],
-    image: "/projects/ai-agentic.jpg",
+    image: "/projects/ai-agents-mcp-suite.jpg",
     liveUrl: "https://agentic-mcp.dev",
     metrics: [
       { label: "Agent Pipelines", value: "5 Workers" },
