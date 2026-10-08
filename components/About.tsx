@@ -397,10 +397,10 @@ export default function About() {
                 }}
               >
                 {/* 1. Wide Atmospheric Ambient Glow Aura */}
-                <div className="absolute w-28 sm:w-36 h-full bg-gradient-to-r from-transparent via-white/12 to-transparent blur-2xl" />
+                <div className="absolute w-28 sm:w-36 h-full bg-gradient-to-r from-transparent via-white/10 to-transparent blur-2xl" />
 
                 {/* 2. Soft Luminous Scan Blade (Covers the transition seam) */}
-                <div className="absolute w-12 sm:w-16 h-full bg-gradient-to-r from-transparent via-white/30 to-transparent blur-md" />
+                <div className="absolute w-12 sm:w-16 h-full bg-gradient-to-r from-transparent via-white/20 to-transparent blur-md" />
 
                 {/* 3. Ethereal Vertical Photon Ray (Fades seamlessly at top and bottom) */}
                 {/* <div

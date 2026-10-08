@@ -953,8 +953,8 @@ export default function WatchingCat() {
           </g>
         </svg>
 
-        <div className="mt-2 font-mono-tech text-[10px] uppercase tracking-widest text-neutral-400 select-none">
-          CLICK ME ? 
+        <div className="mt-2 font-mono-tech text-base uppercase tracking-widest text-neutral-400 select-none">
+          My Stack
         </div>
       </div>
 
