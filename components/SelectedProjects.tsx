@@ -148,7 +148,7 @@ export default function SelectedProjects() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-3 gap-4 border-y border-white/10 py-5 font-mono-tech">
+                {/* <div className="grid grid-cols-3 gap-4 border-y border-white/10 py-5 font-mono-tech">
                   {project.metrics.map((m, mIdx) => (
                     <div key={mIdx}>
                       <span className="text-sm md:text-base font-bold text-white block">
@@ -159,9 +159,9 @@ export default function SelectedProjects() {
                       </span>
                     </div>
                   ))}
-                </div>
+                </div> */}
 
-                <div className="flex flex-wrap gap-2 pt-2">
+                <div className="flex flex-wrap gap-2">
                   {project.technologies.map((tech, tIdx) => (
                     <span
                       key={tIdx}
@@ -200,9 +200,9 @@ export default function SelectedProjects() {
                   />
                 </div>
 
-                <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm border border-white/10 px-3 py-1 font-mono-tech text-[10px] text-white tracking-widest uppercase">
+                {/* <div className="absolute top-4 right-4 bg-black/80 backdrop-blur-sm border border-white/10 px-3 py-1 font-mono-tech text-[10px] text-white tracking-widest uppercase">
                   {project.number} {"//"} {project.title}
-                </div>
+                </div> */}
               </div>
             </div>
           ))}
@@ -214,9 +214,9 @@ export default function SelectedProjects() {
           <div className="max-w-3xl w-full bg-[#000000] border border-white/20 p-5 sm:p-8 md:p-12 relative flex flex-col justify-between my-auto">
             <div className="flex justify-between items-start border-b border-white/10 pb-6 mb-6">
               <div>
-                <span className="font-mono-tech text-xs text-neutral-400 block mb-1">
+                {/* <span className="font-mono-tech text-xs text-neutral-400 block mb-1">
                   PROJECT SPECIFICATION {"//"} {selectedModalProject.number}
-                </span>
+                </span> */}
                 <h3 className="text-3xl md:text-4xl font-bold uppercase text-white tracking-tight">
                   {selectedModalProject.title}
                 </h3>
@@ -229,7 +229,7 @@ export default function SelectedProjects() {
                 data-cursor="pointer"
                 className="font-mono-tech text-xs uppercase tracking-widest text-white border border-white/20 px-3 py-1.5 hover:bg-white hover:text-black transition-colors"
               >
-                CLOSE [×]
+                CLOSE ×
               </button>
             </div>
 
