@@ -43,6 +43,7 @@ const STACK_LIST: TechItem[] = [
 ];
 
 const POOL_SIZE = 12;
+const MEOW_VOLUME = 0.3; // 0 = silent, 1 = full. Try 0.2 to 0.4
 
 export default function WatchingCat() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -58,6 +59,8 @@ export default function WatchingCat() {
   const earLeftRef = useRef<SVGGElement>(null);
   const earRightRef = useRef<SVGGElement>(null);
   const tailRef = useRef<SVGGElement>(null);
+  const mouthClosedRef = useRef<SVGGElement>(null);
+const mouthOpenRef = useRef<SVGGElement>(null);
   const bodyRef = useRef<SVGGElement>(null);
   const popupRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -83,7 +86,7 @@ export default function WatchingCat() {
     try {
       const audio = new Audio("/meow.wav");
       audio.preload = "auto";
-      audio.volume = 0.9;
+      audio.volume = MEOW_VOLUME;;
       audioRef.current = audio;
     } catch {
       // Audio preloading fallback
@@ -567,7 +570,7 @@ export default function WatchingCat() {
 
       const gain = ctx.createGain();
       gain.gain.setValueAtTime(0.001, now);
-      gain.gain.linearRampToValueAtTime(0.22, now + 0.07);
+      gain.gain.linearRampToValueAtTime(0.08, now + 0.07);
       gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
 
       osc.connect(filter);
@@ -585,7 +588,7 @@ export default function WatchingCat() {
     try {
       if (audioRef.current) {
         const sound = audioRef.current.cloneNode() as HTMLAudioElement;
-        sound.volume = 0.9;
+        sound.volume = MEOW_VOLUME;
         const playPromise = sound.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
@@ -635,12 +638,52 @@ export default function WatchingCat() {
     }
   };
 
+  // How long the meow lasts (uses the real audio length when it is available)
+const getMeowDuration = () => {
+  const d = audioRef.current?.duration;
+  return d && Number.isFinite(d) && d > 0 ? Math.min(d, 2) : 0.6;
+};
+
+// Lips go round, "talk" for the length of the sound, then close again
+const animateMouth = (duration: number) => {
+  const open = mouthOpenRef.current;
+  const closed = mouthClosedRef.current;
+  if (!open || !closed) return;
+
+  gsap.killTweensOf([open, closed]);
+  gsap.set(open, { svgOrigin: "300 348", opacity: 1, scaleX: 0.5, scaleY: 0.15 });
+  gsap.set(closed, { opacity: 0 });
+
+  const tl = gsap.timeline();
+  tl.to(open, { scaleX: 1, scaleY: 1, duration: 0.08, ease: "power2.out" });
+
+  const beats = Math.max(1, Math.round(duration / 0.25));
+  for (let i = 0; i < beats; i++) {
+    tl.to(open, { scaleX: 0.85, scaleY: 0.6, duration: 0.09, ease: "sine.inOut" }).to(open, {
+      scaleX: 1,
+      scaleY: 1,
+      duration: 0.09,
+      ease: "sine.inOut",
+    });
+  }
+
+  tl.to(open, { scaleX: 0.5, scaleY: 0.15, opacity: 0, duration: 0.12, ease: "power2.in" }).set(
+    closed,
+    { opacity: 1 },
+    "<"
+  );
+};
+
+
+
   // 9. Click: bounce + eyes widen + meow sound
   const handleCatClick = () => {
     if (!catSvgRef.current) return;
 
     // Trigger authentic meow sound
     playMeowSound();
+    playMeowSound();
+animateMouth(getMeowDuration());
 
     gsap
       .timeline()
@@ -875,14 +918,25 @@ export default function WatchingCat() {
           />
           {/* Nose */}
           <path d="M 288,322 L 312,322 L 300,336 Z" fill="#4a4a4a" stroke="#2a2a2a" strokeWidth="1.5" strokeLinejoin="round" />
-          {/* Mouth */}
-          <path
-            d="M 300,336 L 300,348 C 292,360 278,358 270,350 M 300,348 C 308,360 322,358 330,350"
-            fill="none"
-            stroke="#2a2a2a"
-            strokeWidth="2.4"
-            strokeLinecap="round"
-          />
+         {/* Mouth: small line under the nose (always visible) */}
+<path d="M 300,336 L 300,347" fill="none" stroke="#2a2a2a" strokeWidth="2.4" strokeLinecap="round" />
+
+{/* Mouth closed (default) */}
+<g ref={mouthClosedRef}>
+  <path
+    d="M 300,347 C 292,360 278,358 270,350 M 300,347 C 308,360 322,358 330,350"
+    fill="none"
+    stroke="#2a2a2a"
+    strokeWidth="2.4"
+    strokeLinecap="round"
+  />
+</g>
+
+{/* Mouth open (round lips), hidden until the cat meows */}
+<g ref={mouthOpenRef} style={{ opacity: 0 }}>
+  <ellipse cx="300" cy="359" rx="12" ry="13" fill="#1a1a1a" stroke="#2a2a2a" strokeWidth="2.4" />
+  <ellipse cx="300" cy="366" rx="7" ry="4.5" fill="#9a9a9a" />
+</g>
           {/* Whisker pads dots */}
           <g fill="#555555">
             <circle cx="272" cy="332" r="1.7" />

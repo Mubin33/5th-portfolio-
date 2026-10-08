@@ -257,25 +257,29 @@ export const EXPERIENCES: Experience[] = [
 ];
 
 export const SKILL_TRACK_1 = [
-  "REACT ",
-  "NEXT.JS ",
-  "TYPESCRIPT",
-  "JAVASCRIPT (ESNEXT)",
-  "GSAP 3",
-  "SCROLLTRIGGER",
-  "TAILWIND CSS 4",
-  "RESPONSIVE UI",
+  "FRONTEND",
+  "BACKEND",
+  "SAAS",
+  "ERP & HRM",
+  "API",
+  "AI-ASSISTED",
+  "AI AGENTS & AUTOMATION",
+  "SOFTWARE QA",
+  "CODE AUDITING",
+  "UI/UX",
 ];
 
 export const SKILL_TRACK_2 = [
-  "NODE.JS",
-  "EXPRESS",
-  "MONGODB",
-  "PYTHON 3",
-  "DJANGO",
-  "MODEL CONTEXT PROTOCOL (MCP)",
-  "AI AGENTS",
-  "REST APIS",
+  "FRONTEND",
+  "BACKEND",
+  "SAAS",
+  "ERP & HRM",
+  "API",
+  "AI-ASSISTED",
+  "AI AGENTS & AUTOMATION",
+  "SOFTWARE QA",
+  "CODE AUDITING",
+  "UI/UX",
 ];
 
 export const SKILL_CATEGORIES: SkillCategory[] = [
