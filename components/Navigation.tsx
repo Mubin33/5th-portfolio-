@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { scrollToTarget } from "./SmoothScroll";
 import { DEVELOPER_INFO } from "@/data/portfolio";
+import { SocialIconGroup } from "./SocialIcons";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
@@ -202,7 +203,7 @@ export default function Navigation() {
         </div>
 
         <div className="max-w-7xl mx-auto w-full pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between gap-4 font-mono-tech text-xs text-neutral-400 tracking-wider">
-          <div className="flex flex-wrap items-center gap-6">
+          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
             <button
               onClick={() => {
                 setIsOpen(false);
@@ -214,33 +215,10 @@ export default function Navigation() {
               <span>CV</span>
               <span>↗</span>
             </button>
-            <a
-              href="mailto:mubinulislam14@gmail.com"
-              data-cursor="link"
-              className="hover:text-white transition-colors"
-            >
-              mubinulislam14@gmail.com
-            </a>
-            <a
-              href="https://github.com/mubin33"
-              target="_blank"
-              rel="noreferrer"
-              data-cursor="link"
-              className="hover:text-white transition-colors"
-            >
-              GITHUB
-            </a>
-            <a
-              href="https://linkedin.com/in/md-yasin-arafat-mubin-web-developer"
-              target="_blank"
-              rel="noreferrer"
-              data-cursor="link"
-              className="hover:text-white transition-colors"
-            >
-              LINKEDIN
-            </a>
+            <span className="text-white/20 hidden sm:inline">|</span>
+            <SocialIconGroup size="sm" />
           </div>
-          <div>© 2026 MD. YASIN ARAFAT MUBIN</div>
+          <div>© 2026 {DEVELOPER_INFO.name}</div>
         </div>
       </div>
       {/* CV / RESUME VIEWER MODAL */}

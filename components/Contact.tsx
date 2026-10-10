@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "@/lib/gsap";
 import { DEVELOPER_INFO } from "@/data/portfolio";
+import { SocialIconGroup } from "./SocialIcons";
 
 export default function Contact() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -424,28 +425,12 @@ export default function Contact() {
               </div>
             </div> */}
 
-            {/* Networks & Repositories */}
-            <div className="space-y-3">
-              <div className="divide-y divide-white/10 border-y border-white/10 font-mono-tech text-sm">
-                {DEVELOPER_INFO.socials.map((soc) => (
-                  <a
-                    key={soc.name}
-                    href={soc.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    data-cursor="link"
-                    className="group py-3.5 flex items-center justify-between text-neutral-300 hover:text-white transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <span className="text-white font-bold">{soc.name}</span>
-                      <span className="text-neutral-400 text-xs">{soc.handle}</span>
-                    </div>
-                    <span className="group-hover:translate-x-1.5 transition-transform">
-                      ↗
-                    </span>
-                  </a>
-                ))}
+            {/* Networks & Social Channels */}
+            <div className="border border-white/10 bg-neutral-950/60 p-6 md:p-8 space-y-4">
+              <div className="font-mono-tech text-xs uppercase tracking-widest text-neutral-400">
+                PROFILES & REPOSITORIES
               </div>
+              <SocialIconGroup size="lg" />
             </div>
           </div>
         </div>

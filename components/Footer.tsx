@@ -14,7 +14,6 @@ export default function Footer() {
         <div className="flex items-center gap-2">
           <span>© 2026</span>
           <span className="text-white font-bold">{DEVELOPER_INFO.name}</span>
-          {/* <span className="hidden sm:inline text-neutral-400">{"//"} ALL RIGHTS RESERVED</span> */}
         </div>
 
         {/* <div className="text-center text-neutral-400">
