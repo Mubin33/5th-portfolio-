@@ -17,6 +17,7 @@ import Services from "@/components/Services";
 import AISection from "@/components/AISection";
 import TechStack from "@/components/TechStack";
 import WatchingCat from "@/components/WatchingCat";
+import NoticeBoard from "@/components/NoticeBoard";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 
@@ -78,6 +79,9 @@ export default function Home() {
         {/* 11: Continuous Tech Stack Marquee */}
         {/* <TechStack /> */}
 
+
+        {/* 12: Interactive Notice Board */}
+        <NoticeBoard />
 
         {/* 13: Climax Contact Section */}
         <Contact />

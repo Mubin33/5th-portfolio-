@@ -18,6 +18,7 @@
     color: #ffffff;
     color-scheme: dark;
     scroll-behavior: auto; /* Managed by Lenis */
+    scrollbar-gutter: stable;
   }
 
   body {
