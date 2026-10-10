@@ -110,8 +110,8 @@ export default function Navigation() {
       <header
         ref={navBarRef}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-            ? "py-3 bg-black/80 backdrop-blur-md border-b border-white/10"
-            : "py-6 bg-transparent"
+          ? "py-3 bg-black/80 backdrop-blur-md border-b border-white/10"
+          : "py-6 bg-transparent"
           }`}
       >
         <div className="max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between">
@@ -272,8 +272,8 @@ export default function Navigation() {
 
               <div className="flex items-center gap-2 sm:gap-3">
                 <a
-                  href="/Mubin_Software_Developer_CV.pdf"
-                  download="Mubin_Software_Developer_CV.pdf"
+                  href="/Yasin Arafat Software Developer CV.pdf"
+                  download="Yasin Arafat Software Developer CV.pdf"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 px-3 py-1.5 border border-white/20 text-[11px] text-neutral-300 hover:text-black hover:bg-white transition-all uppercase"
@@ -305,7 +305,7 @@ export default function Navigation() {
             {/* Modal Body: Embedded Google Drive Preview Frame */}
             <div className="relative flex-1 w-full h-full bg-neutral-900 overflow-hidden">
               <iframe
-                src="https://drive.google.com/file/d/1F5559vAFENl5vzMYjnAP5CaLW38cxdAt/preview"
+                src="https://drive.google.com/file/d/1C2whv6JyCn16dgP0MfFHohvcVD82ZyTs/preview"
                 title="MD. Yasin Arafat Mubin CV Preview"
                 className="w-full h-full border-0"
                 allow="autoplay"
