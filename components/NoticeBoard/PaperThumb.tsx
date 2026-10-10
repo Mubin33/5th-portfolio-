@@ -210,7 +210,7 @@ export default function PaperThumb({
 
       {/* Note page identifier badge at top left */}
       {!isPile && (
-        <div className="absolute top-1 left-1.5 font-mono-tech text-[8px] text-neutral-400 select-none tracking-widest uppercase pointer-events-none group-hover:text-neutral-900 transition-colors">
+        <div className="absolute top-1.5 left-2 font-sans font-medium text-[10px] text-neutral-400 select-none tracking-normal pointer-events-none group-hover:text-neutral-900 transition-colors">
           #{index + 1}
         </div>
       )}
@@ -227,9 +227,9 @@ export default function PaperThumb({
           </svg>
         ) : (
           !isPile && (
-            <div className="w-full h-full flex flex-col items-center justify-center font-mono-tech text-[8px] text-neutral-400 uppercase tracking-widest">
-              <span>[ BLANK ]</span>
-              <span className="text-[7px] text-neutral-400/60 mt-0.5">CLICK TO DRAW</span>
+            <div className="w-full h-full flex flex-col items-center justify-center font-sans text-xs text-neutral-400 font-normal">
+              <span>Blank note</span>
+              <span className="text-[10px] text-neutral-400/70 mt-0.5">Click to draw</span>
             </div>
           )
         )}
@@ -237,8 +237,9 @@ export default function PaperThumb({
 
       {/* Hover peek indicator hint */}
       {!isPile && (
-        <div className="absolute -bottom-7 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-900 text-white font-mono-tech text-[8px] tracking-wider px-2 py-0.5 rounded shadow pointer-events-none whitespace-nowrap z-50 uppercase">
-          CLICK TO OPEN / EDIT ✍︎
+        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-200 bg-neutral-900 border border-white/20 text-white font-sans text-[10px] font-medium tracking-normal px-2.5 py-1 rounded shadow-xl pointer-events-none whitespace-nowrap z-50 flex items-center gap-1.5">
+          <span>Click to view & edit</span>
+          {/* <span className="text-neutral-400">✍︎</span> */}
         </div>
       )}
 

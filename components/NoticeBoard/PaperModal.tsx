@@ -217,18 +217,18 @@ export default function PaperModal({
             className="absolute -top-3.5 left-1/2 -translate-x-1/2 w-28 h-7 bg-white/70 border border-neutral-300 shadow-sm z-30 cursor-grab active:cursor-grabbing flex items-center justify-center group"
             title="Drag here to move paper onto the board"
           >
-            <span className="font-mono-tech text-[9px] uppercase tracking-widest text-neutral-500 group-hover:text-black">
-              ::: DRAG :::
+            <span className="font-sans text-[10px] text-neutral-500 font-medium group-hover:text-black">
+              Drag to pin
             </span>
           </div>
 
           {/* Grab Zone Border Margins */}
           {/* <div
             onPointerDown={handleGrabPointerDown}
-            className="w-full h-7 cursor-grab active:cursor-grabbing hover:bg-neutral-100/60 transition-colors flex items-center justify-between px-3 text-neutral-400 font-mono-tech text-[10px]"
+            className="w-full h-7 cursor-grab active:cursor-grabbing hover:bg-neutral-100/60 transition-colors flex items-center justify-between px-3 text-neutral-400 font-sans text-xs"
           >
-            <span className="uppercase tracking-wider">PAPER #{paper.id.slice(-4)}</span>
-            <span className="text-[9px] tracking-widest text-neutral-400">EDGE = GRAB</span>
+            <span className="font-medium text-neutral-500">Note #{paper.id.slice(-4)}</span>
+            <span className="text-[11px] text-neutral-400">Grab edge to move</span>
           </div> */}
 
           {/* Middle Row: Left Grab + Canvas + Right Grab */}
@@ -259,24 +259,24 @@ export default function PaperModal({
           {/* Bottom Grab Margin */}
           {/* <div
             onPointerDown={handleGrabPointerDown}
-            className="w-full h-7 cursor-grab active:cursor-grabbing hover:bg-neutral-100/60 transition-colors flex items-center justify-center font-mono-tech text-[10px] text-neutral-400 uppercase tracking-widest"
+            className="w-full h-7 cursor-grab active:cursor-grabbing hover:bg-neutral-100/60 transition-colors flex items-center justify-center font-sans text-xs text-neutral-400"
           >
-            ↕ DRAG EDGE TO PIN ↕
+            ↕ Drag edge to pin onto board ↕
           </div> */}
         </div>
 
         {/* Helpful User Hint */}
-        {/* <p className="mt-3.5 text-center font-mono-tech text-xs text-neutral-400 tracking-wider">
-          Draw on the paper. Drag its edge or click PIN to place on the board.
+        {/* <p className="mt-3.5 text-center font-sans text-xs text-neutral-400 leading-relaxed">
+          Draw on the paper. Drag its edge or click Pin to place on the board.
         </p> */}
 
         {/* Bottom Toolbar */}
-        <div className="mt-4 w-full bg-neutral-950 border border-white/15 p-3 sm:p-4 flex flex-col gap-3 font-mono-tech z-10">
+        <div className="mt-4 w-full bg-neutral-950 border border-white/15 p-3 sm:p-4 flex flex-col gap-3 font-sans z-10">
           {/* Top Toolbar Row: Colors & Sizes */}
           <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
             {/* Colors */}
             <div className="flex items-center gap-2">
-              <span className="text-[10px] text-neutral-500 uppercase mr-1">INK:</span>
+              <span className="text-xs text-neutral-400 mr-1 font-medium">Ink:</span>
               {COLORS.map((c) => (
                 <button
                   key={c.value}
@@ -294,7 +294,7 @@ export default function PaperModal({
 
             {/* Sizes */}
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-neutral-500 uppercase mr-1">SIZE:</span>
+              <span className="text-xs text-neutral-400 mr-1 font-medium">Size:</span>
               {SIZES.map((s) => (
                 <button
                   key={s.value}
@@ -324,20 +324,20 @@ export default function PaperModal({
                 type="button"
                 onClick={handleUndo}
                 disabled={strokes.length === 0}
-                className="px-3 py-1.5 border border-white/20 text-xs text-neutral-300 hover:text-white hover:border-white/50 disabled:opacity-30 disabled:pointer-events-none transition-colors uppercase tracking-wider"
+                className="px-3 py-1.5 border border-white/20 text-xs text-neutral-300 hover:text-white hover:border-white/50 disabled:opacity-30 disabled:pointer-events-none transition-colors font-medium"
                 aria-label="Undo last stroke"
               >
-                UNDO ↺
+                Undo ↺
               </button>
 
               <button
                 type="button"
                 onClick={handleClear}
                 disabled={strokes.length === 0}
-                className="px-3 py-1.5 border border-white/20 text-xs text-neutral-300 hover:text-white hover:border-white/50 disabled:opacity-30 disabled:pointer-events-none transition-colors uppercase tracking-wider"
+                className="px-3 py-1.5 border border-white/20 text-xs text-neutral-300 hover:text-white hover:border-white/50 disabled:opacity-30 disabled:pointer-events-none transition-colors font-medium"
                 aria-label="Clear all strokes"
               >
-                CLEAR ✕
+                Clear ✕
               </button>
             </div>
 
@@ -345,20 +345,20 @@ export default function PaperModal({
               <button
                 type="button"
                 onClick={handlePinAutoClick}
-                className="px-3.5 py-1.5 bg-white text-black font-bold text-xs uppercase tracking-wider hover:bg-neutral-200 transition-colors flex items-center gap-1.5 shadow-sm"
+                className="px-3.5 py-1.5 bg-white text-black font-semibold text-xs hover:bg-neutral-200 transition-colors flex items-center gap-1.5 shadow-sm"
                 aria-label="Pin paper to board automatically"
               >
-                <span>PIN TO BOARD</span>
+                <span>Pin to board</span>
                 <span>📌</span>
               </button>
 
               <button
                 type="button"
                 onClick={onClose}
-                className="px-3 py-1.5 border border-white/20 text-xs text-neutral-400 hover:text-white hover:border-white/50 transition-colors uppercase tracking-wider"
+                className="px-3 py-1.5 border border-white/20 text-xs text-neutral-400 hover:text-white hover:border-white/50 transition-colors font-medium"
                 aria-label="Close modal without pinning"
               >
-                CLOSE [×]
+                Close [×]
               </button>
             </div>
           </div>

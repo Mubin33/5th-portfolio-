@@ -41,6 +41,9 @@ export default function Home() {
         {/* 03: About Me Section */}
         <About />
 
+        {/* 12: Interactive Notice Board */}
+        <NoticeBoard />
+
         {/* 02: Introduction Section */}
         <Introduction />
 
@@ -79,9 +82,6 @@ export default function Home() {
         {/* 11: Continuous Tech Stack Marquee */}
         {/* <TechStack /> */}
 
-
-        {/* 12: Interactive Notice Board */}
-        <NoticeBoard />
 
         {/* 13: Climax Contact Section */}
         <Contact />

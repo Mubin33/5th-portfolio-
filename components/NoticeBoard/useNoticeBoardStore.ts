@@ -135,7 +135,8 @@ type Action =
   | { type: "PLACE_PAPER"; paperId: string; x: number; y: number; rotation?: number }
   | { type: "UPDATE_STROKES"; paperId: string; strokes: Stroke[] }
   | { type: "CREATE_PILE_PAPER"; paper: Paper }
-  | { type: "DELETE_PAPER"; paperId: string };
+  | { type: "DELETE_PAPER"; paperId: string }
+  | { type: "CLEAR_BOARD" };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -207,6 +208,13 @@ function reducer(state: State, action: Action): State {
       return {
         ...state,
         papers: state.papers.filter((p) => p.id !== action.paperId),
+      };
+    }
+    case "CLEAR_BOARD": {
+      return {
+        ...state,
+        papers: state.papers.filter((p) => p.status !== "board"),
+        activeMode: { type: "idle" },
       };
     }
     default:
@@ -342,6 +350,10 @@ export function useNoticeBoardStore(storage = localNoticeBoardStorage) {
     [state.papers]
   );
 
+  const clearBoard = useCallback(() => {
+    dispatch({ type: "CLEAR_BOARD" });
+  }, []);
+
   return {
     papers: state.papers,
     boardPapers,
@@ -358,5 +370,6 @@ export function useNoticeBoardStore(storage = localNoticeBoardStorage) {
     updateStrokes,
     getPaper,
     createNewPaper,
+    clearBoard,
   };
 }

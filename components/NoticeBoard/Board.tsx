@@ -78,15 +78,15 @@ export default function Board({
       {/* 1. Main Dark Pinboard Container */}
       <div className="flex-1 flex flex-col">
         {/* Board Top Header / Status Line */}
-        <div className="flex items-center justify-end py-2 px-1 font-mono-tech text-xs tracking-wider text-neutral-400 uppercase">
+        <div className="flex items-center justify-end py-2 px-1 mb-3 font-sans text-xs text-neutral-400">
           {/* <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-white font-bold">PINBOARD MATRIX</span>
-            <span className="text-neutral-500 hidden sm:inline">{"//"} CLICK TO INSPECT / DRAG TO ARRANGE</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-400" />
+            <span className="text-neutral-200 font-medium">Pinboard matrix</span>
+            <span className="text-neutral-500 hidden sm:inline">• Click to view, drag to reposition</span>
           </div> */}
           <div>
-            <span className={isBoardFull ? "text-amber-400 font-bold" : "text-neutral-300"}>
-              {papers.length} / {maxPapers} PINNED
+            <span className={isBoardFull ? "text-amber-400 font-medium" : "text-neutral-300 font-normal"}>
+              {papers.length} of {maxPapers} pinned
             </span>
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function Board({
           {papers.map((paper, idx) => (
             <div
               key={paper.id}
-              className="absolute pointer-events-auto"
+              className="board-paper-item absolute pointer-events-auto"
               style={{
                 left: `${paper.x * 100}%`,
                 top: `${paper.y * 100}%`,
@@ -132,9 +132,9 @@ export default function Board({
 
           {/* Empty Board Hint if all papers cleared */}
           {papers.length === 0 && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center pointer-events-none font-mono-tech text-neutral-500 text-xs">
-              <span className="text-sm font-bold text-neutral-400 mb-1 uppercase">BOARD IS EMPTY</span>
-              <span>Take a sheet from the pile on the right to leave your mark.</span>
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center pointer-events-none font-sans text-neutral-400 text-xs">
+              <span className="text-sm font-medium text-neutral-200 mb-1">Board is empty</span>
+              <span className="text-neutral-500">Take a sheet from the pile on the right to leave your mark.</span>
             </div>
           )}
         </div>
@@ -143,13 +143,13 @@ export default function Board({
       {/* 2. Paper Pile Container (Right on desktop, Below on mobile) */}
       <div className="w-full lg:w-64 flex flex-col justify-between pt-0 lg:pt-8 flex-shrink-0">
         <div>
-          <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-4 font-mono-tech text-xs tracking-wider text-neutral-400 uppercase">
-            <span>BLANK SHEETS PILE</span>
-            <span className="text-white font-bold">{isBoardFull ? "FULL" : "READY"}</span>
+          <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-3 font-sans text-xs text-neutral-400">
+            <span>Blank sheets pile</span>
+            <span className="text-neutral-200 font-medium">{isBoardFull ? "Full" : "Ready"}</span>
           </div>
 
-          <p className="font-mono-tech text-[11px] text-neutral-400 leading-relaxed mb-6">
-            Click the top paper to draw with our vector pen. Grab the edges to pin your work onto the board.
+          <p className="font-sans text-xs text-neutral-400 leading-relaxed font-normal mb-5">
+            Click the top sheet to sketch with the vector pen. Drag your note anywhere onto the board.
           </p>
 
           {/* Visual Stack of Sheets */}
@@ -197,25 +197,25 @@ export default function Board({
             >
               {/* Top tape accent */}
               <div className="w-16 h-4 mx-auto -mt-1 bg-neutral-200/60 border border-neutral-300/80 shadow-xs flex items-center justify-center">
-                <span className="font-mono-tech text-[8px] tracking-widest text-neutral-400 group-hover:text-black transition-colors">
-                  NEW
+                <span className="font-sans text-[10px] text-neutral-500 font-medium group-hover:text-black transition-colors">
+                  New sheet
                 </span>
               </div>
 
               {/* Center icon / invitation */}
-              <div className="my-auto text-center flex flex-col items-center justify-center gap-1 font-mono-tech">
+              <div className="my-auto text-center flex flex-col items-center justify-center gap-1 font-sans">
                 <span className="text-xl group-hover:scale-110 transition-transform">✍︎</span>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-800">
-                  {isBoardFull ? "BOARD FULL" : "CLICK TO DRAW"}
+                <span className="text-xs font-semibold text-neutral-800">
+                  {isBoardFull ? "Board full" : "Click to draw"}
                 </span>
-                <span className="text-[9px] text-neutral-500">
-                  {isBoardFull ? "MAX 30 REACHED" : "+ BLANK SHEET"}
+                <span className="text-[11px] text-neutral-500">
+                  {isBoardFull ? "Max 30 reached" : "+ Blank sheet"}
                 </span>
               </div>
 
               {/* Bottom footer hint */}
-              <div className="text-center font-mono-tech text-[8px] text-neutral-400 uppercase tracking-widest border-t border-neutral-100 pt-1">
-                VECTOR INK
+              <div className="text-center font-sans text-[10px] text-neutral-400 pt-1 border-t border-neutral-100">
+                Vector ink
               </div>
             </div>
           </div>
@@ -223,16 +223,16 @@ export default function Board({
 
         {/* Board Full Notice or Action Helper */}
         {isBoardFull ? (
-          <div className="border border-amber-500/30 bg-amber-950/20 p-3 mt-4 text-center font-mono-tech text-xs text-amber-400">
-            ⚠️ Board is currently full (30 papers). Reposition or inspect existing notes!
+          <div className="border border-amber-500/30 bg-amber-950/20 p-3 mt-4 text-center font-sans text-xs text-amber-400">
+            ⚠️ Board is currently full (30 notes). Reposition or inspect existing notes!
           </div>
         ) : (
           <button
             type="button"
             onClick={handleTopPileClick}
-            className="w-full py-3 px-4 bg-white text-black font-bold font-mono-tech text-xs uppercase tracking-widest hover:bg-neutral-200 transition-colors mt-4 text-center shadow-sm"
+            className="w-full py-3 px-4 bg-white text-black font-semibold font-sans text-xs hover:bg-neutral-200 transition-colors mt-4 text-center shadow-sm"
           >
-            CREATE NEW NOTE +
+            Create new note +
           </button>
         )}
       </div>
