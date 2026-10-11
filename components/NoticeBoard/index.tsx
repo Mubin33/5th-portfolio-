@@ -7,6 +7,7 @@ import Board from "./Board";
 import PaperModal from "./PaperModal";
 import DragGhost from "./DragGhost";
 import { Paper, DragGhostData, Stroke } from "./types";
+import { renderPaperToDataUrl } from "./renderPaperImage";
 import { gsap } from "@/lib/gsap";
 
 export default function NoticeBoard() {
@@ -174,7 +175,28 @@ export default function NoticeBoard() {
     const count = store.boardPapers.length;
     setSentCount(count);
 
-    // Animate all papers sweeping/flying up off the board
+    // 1. Snapshot board papers and generate image data URLs for all sketched notes
+    const papersPayload = store.boardPapers.map((paper, i) => ({
+      id: paper.id,
+      index: i + 1,
+      strokeCount: paper.strokes?.length || 0,
+      createdAt: paper.createdAt,
+      imageData: renderPaperToDataUrl(paper),
+    }));
+
+    // 2. Dispatch silent email transmission directly to Mubin via /api/notices
+    fetch("/api/notices", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        papers: papersPayload,
+        clientTimestamp: new Date().toISOString(),
+      }),
+    }).catch((err) => {
+      console.error("NoticeBoard email transmission error:", err);
+    });
+
+    // 3. Animate all papers sweeping/flying up off the board
     const paperElements = document.querySelectorAll("#notice-board-surface .board-paper-item");
     if (paperElements.length > 0) {
       gsap.to(paperElements, {
