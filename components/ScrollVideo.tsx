@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
@@ -15,7 +15,7 @@ export interface MobileFocalKeyframe {
 }
 
 export interface ScrollVideoProps {
-  /** Section number label (e.g. "03") */
+  /** Section number label (e.g. "03" or "00") */
   sectionNumber?: string;
   /** Section uppercase title (e.g. "THE OFFICE") */
   sectionTitle?: string;
@@ -27,11 +27,15 @@ export interface ScrollVideoProps {
   mobileFramePath?: (i: number) => string;
   /** Total frames on mobile (default 120) */
   mobileFrameCount?: number;
-  /** Aspect ratio of frames (default 16/9) */
+  /** Aspect ratio of source frames (default 16/9) */
   aspectRatio?: number;
-  /** Total duration in seconds (default 10) */
+  /** Aspect ratio of the video frame on mobile below 1024px (default 4/3) */
+  mobileAspect?: number;
+  /** Scroll duration multiplier for mobile sticky pin (default 3.5, meaning 3.5x viewport height) */
+  mobilePinLength?: number;
+  /** Total duration in seconds for time indicator (default 10) */
   durationSeconds?: number;
-  /** Pin scroll length (defaults to 500% desktop, 400% mobile) */
+  /** Desktop pin scroll length (defaults to "500%") */
   pinLength?: string;
   /** Horizontal crop anchor (0 to 1, default 0.5) */
   focalX?: number;
@@ -57,41 +61,10 @@ const DEFAULT_MOBILE_FOCAL: MobileFocalKeyframe[] = [
 ];
 
 const DEFAULT_CAPTIONS: ScrollVideoCaption[] = [
-  { from: 0.0, to: 0.3, text: "WELCOME" },
-  { from: 0.42, to: 0.72, text: "HELLO." },
+  // { from: 0.0, to: 0.3, text: "WELCOME" },
+  { from: 0.42, to: 0.72, text: "Hi" },
   { from: 0.8, to: 1.0, text: "LET'S WORK TOGETHER" },
 ];
-
-/**
- * Loads and decodes an image frame, prioritizing createImageBitmap for GPU upload performance.
- */
-async function loadFrame(url: string, signal?: AbortSignal): Promise<ImageBitmap | HTMLImageElement> {
-  if (typeof window !== "undefined" && "createImageBitmap" in window && typeof fetch !== "undefined") {
-    try {
-      const res = await fetch(url, { signal });
-      if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status}`);
-      const blob = await res.blob();
-      return await createImageBitmap(blob);
-    } catch (err: unknown) {
-      if ((err as Error)?.name === "AbortError") throw err;
-      // Fallback below
-    }
-  }
-
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = url;
-    img.onload = () => {
-      if ("decode" in img) {
-        img.decode().then(() => resolve(img)).catch(() => resolve(img));
-      } else {
-        resolve(img);
-      }
-    };
-    img.onerror = reject;
-  });
-}
 
 /**
  * Calculates focalX across mobile keyframes based on scroll progress.
@@ -125,8 +98,10 @@ export default function ScrollVideo({
   framePath = (i: number) => `/frames/f_${String(Math.max(1, Math.min(240, i))).padStart(4, "0")}.webp`,
   mobileFramePath = (i: number) => `/frames-sm/f_${String(Math.max(1, Math.min(120, i))).padStart(4, "0")}.webp`,
   aspectRatio = 16 / 9,
+  mobileAspect = 4 / 3,
+  mobilePinLength = 3.5,
   durationSeconds = 10,
-  pinLength,
+  pinLength = "500%",
   focalX = 0.5,
   mobileFocal = DEFAULT_MOBILE_FOCAL,
   blendFrames = false,
@@ -137,6 +112,7 @@ export default function ScrollVideo({
 }: ScrollVideoProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const videoFrameRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   // Overlay UI refs for high-frequency updates without React re-renders
@@ -149,7 +125,6 @@ export default function ScrollVideo({
 
   // State
   const [isReducedMotion, setIsReducedMotion] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   // Storage and control refs
   const framesRef = useRef<(ImageBitmap | HTMLImageElement | null)[]>([]);
@@ -165,14 +140,10 @@ export default function ScrollVideo({
   const progressRef = useRef(0);
   const isTabVisibleRef = useRef(true);
 
-  const totalFrames = isMobile ? mobileFrameCount : frameCount;
-  const activePinLength = pinLength ?? (isMobile ? "400%" : "500%");
-
-  // Detect motion preferences and device size on mount
+  // Check prefers-reduced-motion on mount
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     setIsReducedMotion(reduced);
-    setIsMobile(window.innerWidth < 768);
   }, []);
 
   /**
@@ -226,13 +197,13 @@ export default function ScrollVideo({
       let sy = 0;
 
       if (canvasRatio < srcRatio) {
-        // Canvas is narrower/taller than frame (e.g. portrait screens)
+        // Canvas is narrower/taller than frame (e.g. 4/3 mobile or portrait)
         sHeight = srcH;
         sWidth = srcH * canvasRatio;
         sx = Math.max(0, Math.min(srcW - sWidth, (srcW - sWidth) * fx));
         sy = 0;
       } else {
-        // Canvas is wider than frame (e.g. desktop/ultrawide screens)
+        // Canvas is wider than frame (e.g. 16/9 uncropped or ultrawide desktop)
         sWidth = srcW;
         sHeight = srcW / canvasRatio;
         sx = 0;
@@ -258,9 +229,10 @@ export default function ScrollVideo({
     const ch = canvas.height;
     if (cw === 0 || ch === 0) return;
 
-    const isPortrait = cw < ch;
+    const isDesktop = typeof window !== "undefined" && window.innerWidth >= 1024;
+    const totalFrames = isDesktop ? frameCount : mobileFrameCount;
     const p = progressRef.current;
-    const currentFx = isPortrait ? interpolateFocalX(p, mobileFocal, focalX) : focalX;
+    const currentFx = !isDesktop ? interpolateFocalX(p, mobileFocal, focalX) : focalX;
 
     if (blendFrames) {
       const f = currentFrameRef.current;
@@ -286,42 +258,20 @@ export default function ScrollVideo({
         lastRenderedIdxRef.current = res.index;
       }
     }
-  }, [blendFrames, totalFrames, mobileFocal, focalX, getNearestLoadedFrame, drawImageToCanvas]);
-
-  /**
-   * Resizes canvas internal pixel dimensions with devicePixelRatio capped at 2.
-   */
-  const resizeCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-    const stage = stageRef.current;
-    if (!canvas || !stage) return;
-
-    const rect = stage.getBoundingClientRect();
-    const w = rect.width;
-    const h = rect.height;
-    if (w === 0 || h === 0) return;
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.round(w * dpr);
-    canvas.height = Math.round(h * dpr);
-    canvas.style.width = `${w}px`;
-    canvas.style.height = `${h}px`;
-
-    draw();
-  }, [draw]);
+  }, [blendFrames, frameCount, mobileFrameCount, mobileFocal, focalX, getNearestLoadedFrame, drawImageToCanvas]);
 
   /**
    * Updates time indicator overlay: e.g. "04.2 / 10.0 S".
    */
   const updateTimeUI = useCallback(
-    (frameIdx: number) => {
+    (frameIdx: number, total: number) => {
       if (!timeRef.current) return;
-      const maxIdx = Math.max(1, totalFrames - 1);
+      const maxIdx = Math.max(1, total - 1);
       const p = Math.max(0, Math.min(1, frameIdx / maxIdx));
       const currentSec = p * durationSeconds;
       timeRef.current.textContent = `${currentSec.toFixed(1).padStart(4, "0")} / ${durationSeconds.toFixed(1)} S`;
     },
-    [totalFrames, durationSeconds]
+    [durationSeconds]
   );
 
   /**
@@ -391,129 +341,196 @@ export default function ScrollVideo({
   }, []);
 
   /**
-   * 2-pass loading queue: Pass 1 (every 10th frame), Pass 2 (gap fill), max 6 parallel requests.
+   * Loading queue: max 6 parallel requests on desktop, max 3 on mobile.
+   * On mobile, decodes via createImageBitmap are serialized to prevent CPU/GPU spikes.
    */
-  const startLoadingQueue = useCallback(() => {
-    if (queueStartedRef.current) return;
-    queueStartedRef.current = true;
+  const startLoadingQueue = useCallback(
+    (isDesktop: boolean) => {
+      if (queueStartedRef.current) return;
+      queueStartedRef.current = true;
 
-    // Pass 1: every 10th frame (e.g. 9, 19, 29... total-1)
-    const pass1Queue: number[] = [];
-    for (let i = 0; i < totalFrames; i++) {
-      if (i !== 0 && ((i + 1) % 10 === 0 || i === totalFrames - 1)) {
-        pass1Queue.push(i);
-      }
-    }
-    const pass1Total = Math.max(1, pass1Queue.length);
-    let pass1LoadedCount = 0;
+      const total = isDesktop ? frameCount : mobileFrameCount;
 
-    // Pass 2: remaining frame gaps in order
-    const pass1Set = new Set(pass1Queue);
-    const pass2Queue: number[] = [];
-    for (let i = 1; i < totalFrames; i++) {
-      if (!pass1Set.has(i)) {
-        pass2Queue.push(i);
-      }
-    }
-
-    const updatePass1Line = (ratio: number) => {
-      if (pass1BarRef.current) {
-        const clamped = Math.min(1, Math.max(0, ratio));
-        pass1BarRef.current.style.width = `${(clamped * 100).toFixed(1)}%`;
-        if (clamped >= 1) {
-          setTimeout(() => {
-            if (pass1BarRef.current) {
-              pass1BarRef.current.style.opacity = "0";
-            }
-          }, 350);
+      // Pass 1: every 10th frame
+      const pass1Queue: number[] = [];
+      for (let i = 0; i < total; i++) {
+        if (i !== 0 && ((i + 1) % 10 === 0 || i === total - 1)) {
+          pass1Queue.push(i);
         }
       }
-    };
+      const pass1Total = Math.max(1, pass1Queue.length);
+      let pass1LoadedCount = 0;
 
-    const MAX_CONCURRENT = 6;
-    let activeWorkers = 0;
+      // Pass 2: remaining frame gaps in order
+      const pass1Set = new Set(pass1Queue);
+      const pass2Queue: number[] = [];
+      for (let i = 1; i < total; i++) {
+        if (!pass1Set.has(i)) {
+          pass2Queue.push(i);
+        }
+      }
 
-    const pullNext = () => {
-      if (cancelledRef.current) return;
-
-      while (activeWorkers < MAX_CONCURRENT && (pass1Queue.length > 0 || pass2Queue.length > 0)) {
-        const isPass1 = pass1Queue.length > 0;
-        const idx = isPass1 ? pass1Queue.shift()! : pass2Queue.shift()!;
-
-        if (framesRef.current[idx]) {
-          if (isPass1) {
-            pass1LoadedCount++;
-            updatePass1Line(pass1LoadedCount / pass1Total);
+      const updatePass1Line = (ratio: number) => {
+        if (pass1BarRef.current) {
+          const clamped = Math.min(1, Math.max(0, ratio));
+          pass1BarRef.current.style.width = `${(clamped * 100).toFixed(1)}%`;
+          if (clamped >= 1) {
+            setTimeout(() => {
+              if (pass1BarRef.current) {
+                pass1BarRef.current.style.opacity = "0";
+              }
+            }, 350);
           }
-          continue;
+        }
+      };
+
+      // Desktop: 6 parallel requests. Mobile: 3 parallel requests.
+      const MAX_CONCURRENT = isDesktop ? 6 : 3;
+      let activeWorkers = 0;
+
+      // Serialized decode chain on mobile to prevent scrolling decode spikes
+      let decodeChain = Promise.resolve();
+
+      const loadAndDecode = async (url: string, signal?: AbortSignal): Promise<ImageBitmap | HTMLImageElement> => {
+        if (typeof window !== "undefined" && "createImageBitmap" in window && typeof fetch !== "undefined") {
+          const res = await fetch(url, { signal });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const blob = await res.blob();
+
+          if (isDesktop) {
+            return await createImageBitmap(blob);
+          }
+
+          // Serialize createImageBitmap one at a time on mobile
+          return new Promise<ImageBitmap>((resolve, reject) => {
+            decodeChain = decodeChain.then(async () => {
+              try {
+                const bmp = await createImageBitmap(blob);
+                resolve(bmp);
+              } catch (e) {
+                reject(e);
+              }
+            });
+          });
         }
 
-        activeWorkers++;
-        const frameNum = idx + 1;
-        const url = isMobile ? mobileFramePath(frameNum) : framePath(frameNum);
-
-        loadFrame(url, abortControllerRef.current?.signal)
-          .then((img) => {
-            if (cancelledRef.current) {
-              if (img && "close" in img && typeof img.close === "function") img.close();
-              return;
+        return new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = "anonymous";
+          img.src = url;
+          img.onload = () => {
+            if ("decode" in img) {
+              img.decode().then(() => resolve(img)).catch(() => resolve(img));
+            } else {
+              resolve(img);
             }
-            framesRef.current[idx] = img;
+          };
+          img.onerror = reject;
+        });
+      };
 
-            // Redraw if this frame improves accuracy of current displayed view
-            const currentTarget = Math.round(currentFrameRef.current);
-            if (Math.abs(idx - currentTarget) <= Math.abs(lastRenderedIdxRef.current - currentTarget)) {
-              draw();
-            }
+      const pullNext = () => {
+        if (cancelledRef.current) return;
 
+        while (activeWorkers < MAX_CONCURRENT && (pass1Queue.length > 0 || pass2Queue.length > 0)) {
+          const isPass1 = pass1Queue.length > 0;
+          const idx = isPass1 ? pass1Queue.shift()! : pass2Queue.shift()!;
+
+          if (framesRef.current[idx]) {
             if (isPass1) {
               pass1LoadedCount++;
               updatePass1Line(pass1LoadedCount / pass1Total);
             }
-          })
-          .catch(() => {
-            if (isPass1) {
-              pass1LoadedCount++;
-              updatePass1Line(pass1LoadedCount / pass1Total);
-            }
-          })
-          .finally(() => {
-            activeWorkers--;
-            pullNext();
-          });
-      }
-    };
+            continue;
+          }
 
-    pullNext();
-  }, [totalFrames, isMobile, mobileFramePath, framePath, draw]);
+          activeWorkers++;
+          const frameNum = idx + 1;
+          const url = isDesktop ? framePath(frameNum) : mobileFramePath(frameNum);
 
-  // Main lifecycle: poster, observer, ticker loop, ScrollTrigger, cleanup
+          loadAndDecode(url, abortControllerRef.current?.signal)
+            .then((img) => {
+              if (cancelledRef.current) {
+                if (img && "close" in img && typeof img.close === "function") img.close();
+                return;
+              }
+              framesRef.current[idx] = img;
+
+              // Redraw if this frame improves accuracy of current displayed view
+              const currentTarget = Math.round(currentFrameRef.current);
+              if (Math.abs(idx - currentTarget) <= Math.abs(lastRenderedIdxRef.current - currentTarget)) {
+                draw();
+              }
+
+              if (isPass1) {
+                pass1LoadedCount++;
+                updatePass1Line(pass1LoadedCount / pass1Total);
+              }
+            })
+            .catch(() => {
+              if (isPass1) {
+                pass1LoadedCount++;
+                updatePass1Line(pass1LoadedCount / pass1Total);
+              }
+            })
+            .finally(() => {
+              activeWorkers--;
+              pullNext();
+            });
+        }
+      };
+
+      pullNext();
+    },
+    [frameCount, mobileFrameCount, framePath, mobileFramePath, draw]
+  );
+
+  // Main lifecycle: poster, observer, ticker loop, matchMedia, cleanup
   useEffect(() => {
     cancelledRef.current = false;
     abortControllerRef.current = new AbortController();
-    framesRef.current = new Array(totalFrames).fill(null);
     queueStartedRef.current = false;
 
-    // Initial canvas sizing
-    resizeCanvas();
+    const isDesktop = window.innerWidth >= 1024;
+    const total = isDesktop ? frameCount : mobileFrameCount;
+    framesRef.current = new Array(total).fill(null);
+
+    // Initial canvas sizing using videoFrameRef geometry
+    const initCanvas = () => {
+      const container = videoFrameRef.current;
+      const canvas = canvasRef.current;
+      if (!container || !canvas) return;
+
+      const rect = container.getBoundingClientRect();
+      const w = rect.width;
+      const h = rect.height;
+      if (w === 0 || h === 0) return;
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      draw();
+    };
+    initCanvas();
 
     // 1. Immediately load Frame 1 as poster
-    const posterUrl = isMobile ? mobileFramePath(1) : framePath(1);
-    loadFrame(posterUrl, abortControllerRef.current.signal)
-      .then((poster) => {
-        if (!cancelledRef.current) {
-          framesRef.current[0] = poster;
-          draw();
-        }
-      })
-      .catch(() => {});
+    const posterUrl = isDesktop ? framePath(1) : mobileFramePath(1);
+    const posterImg = new Image();
+    posterImg.crossOrigin = "anonymous";
+    posterImg.src = posterUrl;
+    posterImg.onload = () => {
+      if (!cancelledRef.current) {
+        framesRef.current[0] = posterImg;
+        draw();
+      }
+    };
 
     // 2. IntersectionObserver: begin full preloading queue when ~1.5 screens away
     const io = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
           io.disconnect();
-          startLoadingQueue();
+          startLoadingQueue(window.innerWidth >= 1024);
         }
       },
       { rootMargin: "150% 0px 150% 0px" }
@@ -522,7 +539,7 @@ export default function ScrollVideo({
       io.observe(sectionRef.current);
     }
 
-    // Tab visibility handling: pause/resume ticker
+    // 3. Tab visibility handling: pause/resume ticker
     const handleVisibility = () => {
       isTabVisibleRef.current = !document.hidden;
       if (!document.hidden) {
@@ -531,142 +548,193 @@ export default function ScrollVideo({
     };
     document.addEventListener("visibilitychange", handleVisibility);
 
-    // Resize handling: ignore mobile URL bar height changes (< 120px)
-    let lastW = window.innerWidth;
-    let lastH = window.innerHeight;
+    // 4. ResizeObserver on videoFrameRef: stop reacting to mobile URL bar (56-100px changes)
+    let lastW = 0;
+    let lastH = 0;
 
-    const handleResize = () => {
-      const curW = window.innerWidth;
-      const curH = window.innerHeight;
-      const dw = Math.abs(curW - lastW);
-      const dh = Math.abs(curH - lastH);
+    const ro = new ResizeObserver((entries) => {
+      if (!entries || entries.length === 0) return;
+      const rect = entries[0].contentRect;
+      const newW = rect.width;
+      const newH = rect.height;
+      if (newW === 0 || newH === 0) return;
 
-      if (dw > 0 || dh >= 120) {
-        lastW = curW;
-        lastH = curH;
-        resizeCanvas();
-        ScrollTrigger.refresh();
-      } else {
-        resizeCanvas();
-      }
-    };
-    window.addEventListener("resize", handleResize, { passive: true });
+      const wChanged = Math.abs(newW - lastW) >= 1;
+      const hChanged = Math.abs(newH - lastH) > 120;
 
-    // GSAP context & ScrollTrigger setup
-    const ctx = gsap.context(() => {
-      if (isReducedMotion) {
-        updateTimeUI(0);
-        updateProgressUI(0);
-        return;
-      }
+      // Ignore mobile URL bar collapse/expand (< 120px height change without width change)
+      if (lastW === 0 || wChanged || hChanged) {
+        lastW = newW;
+        lastH = newH;
 
-      if (!sectionRef.current) return;
-
-      // In GSAP ScrollTrigger, earlier pinned sections in the DOM MUST have higher refreshPriority
-      // so their pin spacers are accounted for when later triggers calculate their start/end positions.
-      const resolvedPriority =
-        refreshPriority !== undefined
-          ? refreshPriority
-          : (() => {
-              if (typeof document === "undefined" || !sectionRef.current) return 30;
-              const aboutEl = document.getElementById("about");
-              if (aboutEl && (sectionRef.current.compareDocumentPosition(aboutEl) & Node.DOCUMENT_POSITION_FOLLOWING)) {
-                return 30; // Precedes About (refreshPriority: 20)
-              }
-              const skillsEl = document.getElementById("skills");
-              if (skillsEl && (sectionRef.current.compareDocumentPosition(skillsEl) & Node.DOCUMENT_POSITION_FOLLOWING)) {
-                return 18; // Precedes ZoomHeadingScene (refreshPriority: 15)
-              }
-              const showcaseEl = document.getElementById("projects") || document.querySelector("#work");
-              if (showcaseEl && (sectionRef.current.compareDocumentPosition(showcaseEl) & Node.DOCUMENT_POSITION_FOLLOWING)) {
-                return 12; // Precedes ProjectShowcase (refreshPriority: 10)
-              }
-              return 5;
-            })();
-
-      const st = ScrollTrigger.create({
-        trigger: sectionRef.current,
-        pin: true,
-        start: "top top",
-        end: "+=" + activePinLength,
-        invalidateOnRefresh: true,
-        refreshPriority: resolvedPriority,
-        anticipatePin: 1,
-        onUpdate: (self) => {
-          const p = self.progress;
-          progressRef.current = p;
-          targetFrameRef.current = p * (totalFrames - 1);
-          updateCaptionsUI(p);
-          updateProgressUI(p);
-        },
-        onRefresh: (self) => {
-          // Sync state if page loads in middle or scrolled upward from below
-          const p = self.progress;
-          progressRef.current = p;
-          const target = p * (totalFrames - 1);
-          targetFrameRef.current = target;
-          currentFrameRef.current = target;
-          lastDrawnFrameRef.current = Math.round(target);
+        const canvas = canvasRef.current;
+        if (canvas) {
+          const dpr = Math.min(window.devicePixelRatio || 1, 2);
+          canvas.width = Math.round(newW * dpr);
+          canvas.height = Math.round(newH * dpr);
           draw();
-          updateTimeUI(target);
-          updateCaptionsUI(p);
-          updateProgressUI(p);
-        },
+        }
+
+        // Only refresh ScrollTrigger on desktop where layout changes; never on mobile!
+        if (window.innerWidth >= 1024) {
+          ScrollTrigger.refresh();
+        }
+      }
+    });
+
+    if (videoFrameRef.current) {
+      ro.observe(videoFrameRef.current);
+    }
+
+    // Calculate dynamic refreshPriority so pinned sections refresh in top-to-bottom DOM order
+    const resolvedPriority =
+      refreshPriority !== undefined
+        ? refreshPriority
+        : (() => {
+            if (typeof document === "undefined" || !sectionRef.current) return 30;
+            const aboutEl = document.getElementById("about");
+            if (aboutEl && (sectionRef.current.compareDocumentPosition(aboutEl) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+              return 30; // Precedes About (refreshPriority: 20)
+            }
+            const skillsEl = document.getElementById("skills");
+            if (skillsEl && (sectionRef.current.compareDocumentPosition(skillsEl) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+              return 18; // Precedes ZoomHeadingScene (refreshPriority: 15)
+            }
+            const showcaseEl = document.getElementById("projects") || document.querySelector("#work");
+            if (showcaseEl && (sectionRef.current.compareDocumentPosition(showcaseEl) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+              return 12; // Precedes ProjectShowcase (refreshPriority: 10)
+            }
+            return 5;
+          })();
+
+    // 5. GSAP matchMedia: Desktop (pin: true) vs Mobile (pin: false + CSS sticky)
+    const mm = gsap.matchMedia();
+
+    if (!isReducedMotion && sectionRef.current) {
+      // Desktop: >= 1024px (keep existing pin-based behavior untouched)
+      mm.add("(min-width: 1024px)", () => {
+        if (!sectionRef.current) return;
+
+        const st = ScrollTrigger.create({
+          trigger: sectionRef.current,
+          pin: true,
+          start: "top top",
+          end: "+=" + pinLength,
+          invalidateOnRefresh: true,
+          refreshPriority: resolvedPriority,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            const p = self.progress;
+            progressRef.current = p;
+            targetFrameRef.current = p * (frameCount - 1);
+            updateCaptionsUI(p);
+            updateProgressUI(p);
+          },
+          onRefresh: (self) => {
+            const p = self.progress;
+            progressRef.current = p;
+            const target = p * (frameCount - 1);
+            targetFrameRef.current = target;
+            currentFrameRef.current = target;
+            lastDrawnFrameRef.current = Math.round(target);
+            draw();
+            updateTimeUI(target, frameCount);
+            updateCaptionsUI(p);
+            updateProgressUI(p);
+          },
+        });
+
+        return () => {
+          st.kill();
+        };
       });
 
-      // Synchronize trigger order so subsequent pinned sections recalculate immediately
+      // Mobile: < 1024px (NO pin! Compositor-driven CSS position: sticky eliminates jitter)
+      mm.add("(max-width: 1023px)", () => {
+        if (!sectionRef.current) return;
+
+        const st = ScrollTrigger.create({
+          trigger: sectionRef.current, // wrapper element
+          pin: false,
+          start: "top top",
+          end: "bottom bottom",
+          invalidateOnRefresh: true,
+          refreshPriority: resolvedPriority,
+          onUpdate: (self) => {
+            const p = self.progress;
+            progressRef.current = p;
+            targetFrameRef.current = p * (mobileFrameCount - 1);
+            updateCaptionsUI(p);
+            updateProgressUI(p);
+          },
+          onRefresh: (self) => {
+            const p = self.progress;
+            progressRef.current = p;
+            const target = p * (mobileFrameCount - 1);
+            targetFrameRef.current = target;
+            currentFrameRef.current = target;
+            lastDrawnFrameRef.current = Math.round(target);
+            draw();
+            updateTimeUI(target, mobileFrameCount);
+            updateCaptionsUI(p);
+            updateProgressUI(p);
+          },
+        });
+
+        return () => {
+          st.kill();
+        };
+      });
+
+      // Sync trigger order so subsequent pinned sections recalculate accurately
       ScrollTrigger.sort();
       ScrollTrigger.refresh();
+    }
 
-      // Frame-rate independent lerp ticker (factor ~0.14)
-      const TICKER_LERP = 0.14;
+    // 6. Ticker loop: frame-rate independent lerp (~0.14)
+    const TICKER_LERP = 0.14;
 
-      const tickerCallback = (_time: number, deltaTime: number) => {
-        if (!isTabVisibleRef.current || document.hidden) return;
+    const tickerCallback = (_time: number, deltaTime: number) => {
+      if (!isTabVisibleRef.current || document.hidden) return;
 
-        const target = targetFrameRef.current;
-        const current = currentFrameRef.current;
-        const diff = target - current;
+      const target = targetFrameRef.current;
+      const current = currentFrameRef.current;
+      const diff = target - current;
+      const isDesktopNow = window.innerWidth >= 1024;
+      const totalNow = isDesktopNow ? frameCount : mobileFrameCount;
 
-        if (Math.abs(diff) > 0.001) {
-          const dt = Math.max(1, Math.min(deltaTime || 16.67, 100));
-          const factor = 1 - Math.pow(1 - TICKER_LERP, dt / 16.667);
-          const next = current + diff * factor;
-          currentFrameRef.current = next;
+      if (Math.abs(diff) > 0.001) {
+        const dt = Math.max(1, Math.min(deltaTime || 16.67, 100));
+        const factor = 1 - Math.pow(1 - TICKER_LERP, dt / 16.667);
+        const next = current + diff * factor;
+        currentFrameRef.current = next;
 
-          if (blendFrames) {
-            if (Math.abs(next - lastDrawnFrameRef.current) > 0.005) {
-              lastDrawnFrameRef.current = next;
-              draw();
-              updateTimeUI(next);
-            }
-          } else {
-            const rounded = Math.round(next);
-            if (rounded !== lastDrawnFrameRef.current) {
-              lastDrawnFrameRef.current = rounded;
-              draw();
-              updateTimeUI(next);
-            }
+        if (blendFrames) {
+          if (Math.abs(next - lastDrawnFrameRef.current) > 0.005) {
+            lastDrawnFrameRef.current = next;
+            draw();
+            updateTimeUI(next, totalNow);
           }
-        } else if (current !== target) {
-          currentFrameRef.current = target;
-          lastDrawnFrameRef.current = Math.round(target);
-          draw();
-          updateTimeUI(target);
+        } else {
+          const rounded = Math.round(next);
+          if (rounded !== lastDrawnFrameRef.current) {
+            lastDrawnFrameRef.current = rounded;
+            draw();
+            updateTimeUI(next, totalNow);
+          }
         }
-      };
+      } else if (current !== target) {
+        currentFrameRef.current = target;
+        lastDrawnFrameRef.current = Math.round(target);
+        draw();
+        updateTimeUI(target, totalNow);
+      }
+    };
 
-      gsap.ticker.add(tickerCallback);
-
-      return () => {
-        gsap.ticker.remove(tickerCallback);
-        st.kill();
-        ScrollTrigger.refresh();
-      };
-    }, sectionRef);
+    gsap.ticker.add(tickerCallback);
 
     // Initial UI state
-    updateTimeUI(0);
+    updateTimeUI(0, total);
     updateCaptionsUI(0);
     updateProgressUI(0);
 
@@ -674,9 +742,11 @@ export default function ScrollVideo({
       cancelledRef.current = true;
       abortControllerRef.current?.abort();
       io.disconnect();
+      ro.disconnect();
       document.removeEventListener("visibilitychange", handleVisibility);
-      window.removeEventListener("resize", handleResize);
-      ctx.revert();
+      gsap.ticker.remove(tickerCallback);
+      mm.revert();
+      ScrollTrigger.refresh();
 
       // Memory cleanup: close all loaded ImageBitmaps
       framesRef.current.forEach((item) => {
@@ -689,16 +759,18 @@ export default function ScrollVideo({
       framesRef.current = [];
     };
   }, [
-    totalFrames,
-    isMobile,
+    frameCount,
+    mobileFrameCount,
+    mobileAspect,
+    mobilePinLength,
+    pinLength,
+    durationSeconds,
     isReducedMotion,
-    activePinLength,
     blendFrames,
     refreshPriority,
     framePath,
     mobileFramePath,
     draw,
-    resizeCanvas,
     startLoadingQueue,
     updateTimeUI,
     updateCaptionsUI,
@@ -757,32 +829,19 @@ export default function ScrollVideo({
     <section
       id={id}
       ref={sectionRef}
-      className={`relative w-full h-svh bg-black text-white overflow-hidden select-none border-b border-white/10 ${className}`}
+      style={{
+        "--mobile-pin-h": `calc(100svh + (${mobilePinLength} * 100svh))`,
+        "--mobile-aspect": `${mobileAspect}`,
+      } as React.CSSProperties}
+      className={`relative w-full h-[var(--mobile-pin-h)] lg:h-svh border-b border-white/10 ${className}`}
     >
-      {/* Viewport Canvas Stage */}
-      <div ref={stageRef} className="relative w-full h-full overflow-hidden">
-        {/* Full-bleed Canvas */}
-        <canvas
-          ref={canvasRef}
-          className="absolute inset-0 w-full h-full object-cover block will-change-transform"
-          aria-hidden="true"
-        />
-
-        {/* Screen Reader Accessible Summary */}
-        <p className="sr-only">
-          Camera moving through an open office. A man at a desk waves hello.
-        </p>
-
-        {/* Subtle Vignette & Depth Edge Gradients */}
-        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.85)_100%)] z-[4]" />
-        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-[4]" />
-        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none z-[4]" />
-
-        {/* Subtle dark gradient behind left captions for flawless contrast */}
-        <div className="absolute inset-y-0 left-0 w-full sm:w-3/4 md:w-3/5 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none z-[5]" />
-
-        {/* Top Header UI */}
-        {/* <div className="absolute top-6 sm:top-10 inset-x-0 max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between pointer-events-none z-10">
+      {/* Sticky stage on mobile (<1024px), relative full-height stage on desktop (>=1024px) */}
+      <div
+        ref={stageRef}
+        className="sticky top-0 lg:relative w-full h-svh bg-black text-white select-none overflow-hidden max-lg:flex max-lg:flex-col max-lg:justify-between lg:block"
+      >
+        {/* 1. Top Bar */}
+        {/* <div className="relative lg:absolute lg:top-10 lg:inset-x-0 w-full max-w-7xl mx-auto px-6 md:px-12 pt-5 sm:pt-8 lg:pt-0 pb-2 lg:pb-0 flex items-center justify-between pointer-events-none z-10">
           <div className="flex items-center gap-3 font-mono-tech text-xs tracking-widest uppercase">
             <span className="text-white font-bold">{sectionNumber}</span>
             <span className="w-6 sm:w-8 h-[1px] bg-white/30" />
@@ -797,9 +856,32 @@ export default function ScrollVideo({
           </div>
         </div> */}
 
-        {/* Captions Presentation Area */}
-        <div className="absolute inset-x-0 bottom-24 sm:bottom-28 md:bottom-32 max-w-7xl mx-auto px-6 md:px-12 pointer-events-none z-10">
-          <div className="relative max-w-2xl sm:max-w-3xl min-h-[5rem] sm:min-h-[7rem] flex items-end">
+        {/* 2. Video Frame Container (Edge-to-edge 4/3 frame on mobile, full-bleed on desktop) */}
+        <div
+          ref={videoFrameRef}
+          className="max-lg:relative max-lg:w-full max-lg:my-auto max-lg:border-y max-lg:border-white/10 max-lg:overflow-hidden max-lg:aspect-[var(--mobile-aspect)] lg:absolute lg:inset-0 lg:w-full lg:h-full lg:border-none lg:my-0 lg:aspect-auto"
+        >
+          <canvas
+            ref={canvasRef}
+            className="w-full h-full block object-cover will-change-transform"
+            aria-hidden="true"
+          />
+        </div>
+
+        {/* Screen Reader Accessible Summary */}
+        <p className="sr-only">
+          Camera moving through an open office. A man at a desk waves hello.
+        </p>
+
+        {/* Desktop-only Vignette & Edge Depth Gradients */}
+        <div className="hidden lg:block absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.85)_100%)] z-[4]" />
+        <div className="hidden lg:block absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-[4]" />
+        <div className="hidden lg:block absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none z-[4]" />
+        <div className="hidden lg:block absolute inset-y-0 left-0 w-3/5 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none z-[5]" />
+
+        {/* 3. Captions Area (Directly below video frame on mobile, bottom overlay on desktop) */}
+        <div className="max-lg:relative max-lg:w-full max-lg:max-w-7xl max-lg:mx-auto max-lg:px-6 max-lg:min-h-[4.5rem] sm:max-lg:min-h-[5.5rem] max-lg:flex max-lg:items-center max-lg:z-10 lg:absolute lg:inset-x-0 lg:bottom-28 lg:max-w-7xl lg:mx-auto lg:px-12 lg:pointer-events-none lg:z-10">
+          <div className="relative w-full max-w-2xl sm:max-w-3xl min-h-[3.5rem] sm:min-h-[4.5rem] flex items-end">
             {captions.map((cap, i) => (
               <div
                 key={i}
@@ -809,7 +891,7 @@ export default function ScrollVideo({
                 className="absolute left-0 bottom-0 top-auto will-change-transform transition-none"
                 style={{ opacity: 0, transform: "translate3d(0, 24px, 0)", visibility: "hidden" }}
               >
-                <h2 className="text-section-huge font-extrabold uppercase tracking-tighter text-white leading-none drop-shadow-md">
+                <h2 className="text-2xl sm:text-[140px] lg:text-section-huge font-extrabold tracking-tight lg:tracking-tighter text-white leading-none drop-shadow-md">
                   {cap.text}
                 </h2>
               </div>
@@ -817,10 +899,9 @@ export default function ScrollVideo({
           </div>
         </div>
 
-        {/* Bottom Bar UI: Progress bar & percentage */}
-        <div className="absolute bottom-6 sm:bottom-10 inset-x-0 max-w-7xl mx-auto px-6 md:px-12 flex items-end justify-between pointer-events-none z-10">
-          {/* Bottom-left 1px progress track */}
-          {/* <div className="flex items-center gap-3 sm:gap-4">
+        {/* 4. Bottom Area (Scroll progress and SCROLL hint) */}
+        {/* <div className="relative lg:absolute lg:bottom-10 lg:inset-x-0 w-full max-w-7xl mx-auto px-6 md:px-12 pb-5 sm:pb-8 lg:pb-0 pt-2 lg:pt-0 flex items-end justify-between pointer-events-none z-10">
+            <div className="flex items-center gap-3 sm:gap-4">
             <span className="font-mono-tech text-[10px] sm:text-xs tracking-widest text-neutral-400 uppercase">
               PROG
             </span>
@@ -837,25 +918,23 @@ export default function ScrollVideo({
             >
               0%
             </span>
-          </div> */}
+          </div>
 
-          {/* Bottom-right office coordinate badge */}
-          {/* <div className="hidden sm:flex items-center gap-2 font-mono-tech text-[10px] tracking-widest text-neutral-500 uppercase">
+           <div
+            ref={scrollHintRef}
+            className="absolute bottom-5 sm:bottom-8 lg:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 sm:gap-2 pointer-events-none transition-opacity duration-300 z-10"
+          >
+            <span className="font-mono-tech text-[10px] tracking-[0.25em] text-neutral-400 uppercase">
+              SCROLL
+            </span>
+            <div className="w-[1px] h-5 sm:h-6 bg-gradient-to-b from-white via-white/70 to-transparent animate-pulse" />
+          </div>
+
+            <div className="hidden lg:flex items-center gap-2 font-mono-tech text-[10px] tracking-widest text-neutral-500 uppercase">
             <span>OFFICE_TOUR</span>
             <span>//</span>
             <span>24FPS</span>
-          </div> */}
-        </div>
-
-        {/* Bottom-center animated SCROLL hint */}
-        {/* <div
-          ref={scrollHintRef}
-          className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none transition-opacity duration-300 z-10"
-        >
-          <span className="font-mono-tech text-[10px] tracking-[0.25em] text-neutral-400 uppercase">
-            SCROLL
-          </span>
-          <div className="w-[1px] h-6 bg-gradient-to-b from-white via-white/70 to-transparent animate-pulse" />
+          </div>
         </div> */}
 
         {/* Pass 1 Loading 1px Line at Bottom Edge */}
