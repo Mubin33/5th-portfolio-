@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import SmoothScroll from "@/components/SmoothScroll";
@@ -23,7 +23,7 @@ import Footer from "@/components/Footer";
 import ScrollVideo from "@/components/ScrollVideo";
 
 export default function Home() {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(true);
 
   return (
     <SmoothScroll>
@@ -37,7 +37,7 @@ export default function Home() {
       {/* Main Structural Content */}
       <main className="relative z-10 bg-black text-white min-h-screen">
         {/* 01: Hero Section */}
-        {/* <ScrollVideo /> */}
+        <ScrollVideo />
         <Hero isLoaded={isLoaded} />
 
         {/* 03: About Me Section */}

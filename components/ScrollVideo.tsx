@@ -41,6 +41,8 @@ export interface ScrollVideoProps {
   blendFrames?: boolean;
   /** Captions appearing during specific progress intervals */
   captions?: ScrollVideoCaption[];
+  /** Refresh priority for ScrollTrigger (higher refreshes earlier). Auto-calculated from DOM position if omitted. */
+  refreshPriority?: number;
   /** Custom outer container class name */
   className?: string;
   /** Section id */
@@ -129,6 +131,7 @@ export default function ScrollVideo({
   mobileFocal = DEFAULT_MOBILE_FOCAL,
   blendFrames = false,
   captions = DEFAULT_CAPTIONS,
+  refreshPriority,
   className = "",
   id = "office-tour",
 }: ScrollVideoProps) {
@@ -559,12 +562,36 @@ export default function ScrollVideo({
 
       if (!sectionRef.current) return;
 
+      // In GSAP ScrollTrigger, earlier pinned sections in the DOM MUST have higher refreshPriority
+      // so their pin spacers are accounted for when later triggers calculate their start/end positions.
+      const resolvedPriority =
+        refreshPriority !== undefined
+          ? refreshPriority
+          : (() => {
+              if (typeof document === "undefined" || !sectionRef.current) return 30;
+              const aboutEl = document.getElementById("about");
+              if (aboutEl && (sectionRef.current.compareDocumentPosition(aboutEl) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+                return 30; // Precedes About (refreshPriority: 20)
+              }
+              const skillsEl = document.getElementById("skills");
+              if (skillsEl && (sectionRef.current.compareDocumentPosition(skillsEl) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+                return 18; // Precedes ZoomHeadingScene (refreshPriority: 15)
+              }
+              const showcaseEl = document.getElementById("projects") || document.querySelector("#work");
+              if (showcaseEl && (sectionRef.current.compareDocumentPosition(showcaseEl) & Node.DOCUMENT_POSITION_FOLLOWING)) {
+                return 12; // Precedes ProjectShowcase (refreshPriority: 10)
+              }
+              return 5;
+            })();
+
       const st = ScrollTrigger.create({
         trigger: sectionRef.current,
         pin: true,
         start: "top top",
         end: "+=" + activePinLength,
         invalidateOnRefresh: true,
+        refreshPriority: resolvedPriority,
+        anticipatePin: 1,
         onUpdate: (self) => {
           const p = self.progress;
           progressRef.current = p;
@@ -586,6 +613,10 @@ export default function ScrollVideo({
           updateProgressUI(p);
         },
       });
+
+      // Synchronize trigger order so subsequent pinned sections recalculate immediately
+      ScrollTrigger.sort();
+      ScrollTrigger.refresh();
 
       // Frame-rate independent lerp ticker (factor ~0.14)
       const TICKER_LERP = 0.14;
@@ -630,6 +661,7 @@ export default function ScrollVideo({
       return () => {
         gsap.ticker.remove(tickerCallback);
         st.kill();
+        ScrollTrigger.refresh();
       };
     }, sectionRef);
 
@@ -662,6 +694,7 @@ export default function ScrollVideo({
     isReducedMotion,
     activePinLength,
     blendFrames,
+    refreshPriority,
     framePath,
     mobileFramePath,
     draw,
@@ -686,7 +719,7 @@ export default function ScrollVideo({
           <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.85)_100%)] z-[4]" />
 
           {/* Top Bar Header */}
-          <div className="absolute top-6 sm:top-10 inset-x-0 max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between z-10">
+          {/* <div className="absolute top-6 sm:top-10 inset-x-0 max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between z-10">
             <div className="flex items-center gap-3 font-mono-tech text-xs tracking-widest text-neutral-300 uppercase">
               <span className="text-white font-bold">{sectionNumber}</span>
               <span className="w-6 sm:w-8 h-[1px] bg-white/30" />
@@ -695,11 +728,11 @@ export default function ScrollVideo({
             <div className="font-mono-tech text-xs text-neutral-400 tracking-widest uppercase">
               00.0 / {durationSeconds.toFixed(1)} S
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Stacked Captions Content */}
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 sm:py-24 border-b border-white/10 space-y-8">
+        {/* <div className="max-w-7xl mx-auto px-6 md:px-12 py-16 sm:py-24 border-b border-white/10 space-y-8">
           <div className="font-mono-tech text-xs tracking-widest text-neutral-400 uppercase">
             {sectionNumber} // {sectionTitle} - TRANSCRIPT
           </div>
@@ -715,7 +748,7 @@ export default function ScrollVideo({
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </section>
     );
   }
@@ -749,7 +782,7 @@ export default function ScrollVideo({
         <div className="absolute inset-y-0 left-0 w-full sm:w-3/4 md:w-3/5 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none z-[5]" />
 
         {/* Top Header UI */}
-        <div className="absolute top-6 sm:top-10 inset-x-0 max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between pointer-events-none z-10">
+        {/* <div className="absolute top-6 sm:top-10 inset-x-0 max-w-7xl mx-auto px-6 md:px-12 flex items-center justify-between pointer-events-none z-10">
           <div className="flex items-center gap-3 font-mono-tech text-xs tracking-widest uppercase">
             <span className="text-white font-bold">{sectionNumber}</span>
             <span className="w-6 sm:w-8 h-[1px] bg-white/30" />
@@ -762,7 +795,7 @@ export default function ScrollVideo({
           >
             00.0 / {durationSeconds.toFixed(1)} S
           </div>
-        </div>
+        </div> */}
 
         {/* Captions Presentation Area */}
         <div className="absolute inset-x-0 bottom-24 sm:bottom-28 md:bottom-32 max-w-7xl mx-auto px-6 md:px-12 pointer-events-none z-10">
@@ -787,7 +820,7 @@ export default function ScrollVideo({
         {/* Bottom Bar UI: Progress bar & percentage */}
         <div className="absolute bottom-6 sm:bottom-10 inset-x-0 max-w-7xl mx-auto px-6 md:px-12 flex items-end justify-between pointer-events-none z-10">
           {/* Bottom-left 1px progress track */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          {/* <div className="flex items-center gap-3 sm:gap-4">
             <span className="font-mono-tech text-[10px] sm:text-xs tracking-widest text-neutral-400 uppercase">
               PROG
             </span>
@@ -804,18 +837,18 @@ export default function ScrollVideo({
             >
               0%
             </span>
-          </div>
+          </div> */}
 
           {/* Bottom-right office coordinate badge */}
-          <div className="hidden sm:flex items-center gap-2 font-mono-tech text-[10px] tracking-widest text-neutral-500 uppercase">
+          {/* <div className="hidden sm:flex items-center gap-2 font-mono-tech text-[10px] tracking-widest text-neutral-500 uppercase">
             <span>OFFICE_TOUR</span>
             <span>//</span>
             <span>24FPS</span>
-          </div>
+          </div> */}
         </div>
 
         {/* Bottom-center animated SCROLL hint */}
-        <div
+        {/* <div
           ref={scrollHintRef}
           className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 pointer-events-none transition-opacity duration-300 z-10"
         >
@@ -823,7 +856,7 @@ export default function ScrollVideo({
             SCROLL
           </span>
           <div className="w-[1px] h-6 bg-gradient-to-b from-white via-white/70 to-transparent animate-pulse" />
-        </div>
+        </div> */}
 
         {/* Pass 1 Loading 1px Line at Bottom Edge */}
         <div

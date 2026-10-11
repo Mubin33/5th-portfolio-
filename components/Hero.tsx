@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
@@ -23,7 +23,7 @@ export default function Hero({ isLoaded }: HeroProps) {
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       if (prefersReducedMotion) return;
 
-      const tl = gsap.timeline({ delay: 0.2 });
+      const tl = gsap.timeline({ scrollTrigger: { trigger: containerRef.current, start: "top 85%", toggleActions: "play none none none" } });
 
       tl.fromTo(
         metaTopRef.current,
@@ -182,7 +182,7 @@ export default function Hero({ isLoaded }: HeroProps) {
               className="group flex items-center gap-3 text-white border border-white/20 px-4 py-2 hover:bg-white hover:text-black transition-all duration-300"
             >
               <span>EXPLORE WORK</span>
-              <span className="group-hover:translate-y-0.5 transition-transform">↓</span>
+              <span className="group-hover:translate-y-0.5 transition-transform">â†“</span>
             </button>
           </div> */}
         {/* </div> */}
@@ -196,7 +196,7 @@ export default function Hero({ isLoaded }: HeroProps) {
           {[...marqueeWords, ...marqueeWords].map((word, idx) => (
             <span key={idx} className="flex items-center mx-4">
               <span>{word}</span>
-              <span className="mx-4 text-neutral-700">•</span>
+              <span className="mx-4 text-neutral-700">â€¢</span>
             </span>
           ))}
         </div>
