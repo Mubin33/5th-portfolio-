@@ -20,6 +20,7 @@ import WatchingCat from "@/components/WatchingCat";
 import NoticeBoard from "@/components/NoticeBoard";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
+import ScrollVideo from "@/components/ScrollVideo";
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -36,6 +37,7 @@ export default function Home() {
       {/* Main Structural Content */}
       <main className="relative z-10 bg-black text-white min-h-screen">
         {/* 01: Hero Section */}
+        {/* <ScrollVideo /> */}
         <Hero isLoaded={isLoaded} />
 
         {/* 03: About Me Section */}
