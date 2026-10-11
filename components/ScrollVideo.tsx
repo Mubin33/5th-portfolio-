@@ -96,9 +96,9 @@ export default function ScrollVideo({
   frameCount = 240,
   mobileFrameCount = 120,
   framePath = (i: number) => `/frames/f_${String(Math.max(1, Math.min(240, i))).padStart(4, "0")}.webp`,
-  mobileFramePath = (i: number) => `/frames-sm/f_${String(Math.max(1, Math.min(120, i))).padStart(4, "0")}.webp`,
+  mobileFramePath = (i: number) => `/frames-sm/f_${String(Math.max(1, Math.min(240, i))).padStart(4, "0")}.webp`,
   aspectRatio = 16 / 9,
-  mobileAspect = 1 / 6,
+  mobileAspect = 1 / 4,
   mobilePinLength = 3.5,
   durationSeconds = 10,
   pinLength = "500%",
@@ -867,10 +867,10 @@ export default function ScrollVideo({
             aria-hidden="true"
           />
 
-          {/* Top & Bottom Cinematic Edge Shadows on Video Frame (Mobile & Desktop) */}
-          <div className="absolute inset-x-0 top-0 h-16 sm:h-24 lg:h-32 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-[3]" />
-          <div className="absolute inset-x-0 bottom-0 h-20 sm:h-28 lg:h-36 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none z-[3]" />
-          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.75)_100%)] z-[3]" />
+          {/* Top & Bottom Cinematic Edge Shadows on Video Frame (Mobile Only) */}
+          <div className="lg:hidden absolute inset-x-0 top-0 h-16 sm:h-24 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-[3]" />
+          <div className="lg:hidden absolute inset-x-0 bottom-0 h-20 sm:h-28 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none z-[3]" />
+          <div className="lg:hidden absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.75)_100%)] z-[3]" />
         </div>
 
         {/* Screen Reader Accessible Summary */}
@@ -878,11 +878,11 @@ export default function ScrollVideo({
           Camera moving through an open office. A man at a desk waves hello.
         </p>
 
-        {/* Viewport Top & Bottom Ambient Depth Shadows (Mobile & Desktop) */}
-        <div className="absolute inset-x-0 top-0 h-20 sm:h-28 bg-gradient-to-b from-black via-black/60 to-transparent pointer-events-none z-[4]" />
-        <div className="absolute inset-x-0 bottom-0 h-24 sm:h-32 bg-gradient-to-t from-black via-black/70 to-transparent pointer-events-none z-[4]" />
-        <div className="hidden lg:block absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.85)_100%)] z-[4]" />
-        <div className="hidden lg:block absolute inset-y-0 left-0 w-3/5 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none z-[5]" />
+        {/* Viewport Top & Bottom Ambient Depth Shadows */}
+        <div className="absolute inset-x-0 top-0 h-20 sm:h-28 lg:h-28 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-[4]" />
+        <div className="absolute inset-x-0 bottom-0 h-24 sm:h-32 lg:h-28 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none z-[4]" />
+        <div className="hidden lg:block absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.65)_100%)] z-[4]" />
+        <div className="hidden lg:block absolute inset-y-0 left-0 w-full sm:w-3/4 md:w-1/2 bg-gradient-to-r from-black/70 via-black/35 to-transparent pointer-events-none z-[5]" />
 
         {/* 3. Captions Area (Directly below video frame on mobile, bottom overlay on desktop) */}
         <div className="max-lg:relative max-lg:w-full max-lg:max-w-7xl max-lg:mx-auto max-lg:px-6 max-lg:pb-6 max-lg:min-h-[4.5rem] sm:max-lg:min-h-[5.5rem] max-lg:flex max-lg:items-center max-lg:z-10 lg:absolute lg:inset-x-0 lg:bottom-28 lg:max-w-7xl lg:mx-auto lg:px-12 lg:pointer-events-none lg:z-10">
