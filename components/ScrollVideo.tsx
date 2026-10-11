@@ -29,7 +29,7 @@ export interface ScrollVideoProps {
   mobileFrameCount?: number;
   /** Aspect ratio of source frames (default 16/9) */
   aspectRatio?: number;
-  /** Aspect ratio of the video frame on mobile below 1024px (default 4/3) */
+  /** Aspect ratio of the video frame on mobile below 1024px (width / height, default 3/4 for taller portrait height) */
   mobileAspect?: number;
   /** Scroll duration multiplier for mobile sticky pin (default 3.5, meaning 3.5x viewport height) */
   mobilePinLength?: number;
@@ -98,7 +98,7 @@ export default function ScrollVideo({
   framePath = (i: number) => `/frames/f_${String(Math.max(1, Math.min(240, i))).padStart(4, "0")}.webp`,
   mobileFramePath = (i: number) => `/frames-sm/f_${String(Math.max(1, Math.min(120, i))).padStart(4, "0")}.webp`,
   aspectRatio = 16 / 9,
-  mobileAspect = 4 / 3,
+  mobileAspect = 1 / 6,
   mobilePinLength = 3.5,
   durationSeconds = 10,
   pinLength = "500%",
@@ -859,13 +859,18 @@ export default function ScrollVideo({
         {/* 2. Video Frame Container (Edge-to-edge 4/3 frame on mobile, full-bleed on desktop) */}
         <div
           ref={videoFrameRef}
-          className="max-lg:relative max-lg:w-full max-lg:my-auto max-lg:border-y max-lg:border-white/10 max-lg:overflow-hidden max-lg:aspect-[var(--mobile-aspect)] lg:absolute lg:inset-0 lg:w-full lg:h-full lg:border-none lg:my-0 lg:aspect-auto"
+          className="max-lg:relative max-lg:w-full max-lg:my-auto max-lg:border-y max-lg:border-white/10 max-lg:overflow-hidden max-lg:aspect-[var(--mobile-aspect)] max-lg:max-h-[70svh] lg:absolute lg:inset-0 lg:w-full lg:h-full lg:border-none lg:my-0 lg:aspect-auto"
         >
           <canvas
             ref={canvasRef}
             className="w-full h-full block object-cover will-change-transform"
             aria-hidden="true"
           />
+
+          {/* Top & Bottom Cinematic Edge Shadows on Video Frame (Mobile & Desktop) */}
+          <div className="absolute inset-x-0 top-0 h-16 sm:h-24 lg:h-32 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-[3]" />
+          <div className="absolute inset-x-0 bottom-0 h-20 sm:h-28 lg:h-36 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none z-[3]" />
+          <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.75)_100%)] z-[3]" />
         </div>
 
         {/* Screen Reader Accessible Summary */}
@@ -873,14 +878,14 @@ export default function ScrollVideo({
           Camera moving through an open office. A man at a desk waves hello.
         </p>
 
-        {/* Desktop-only Vignette & Edge Depth Gradients */}
+        {/* Viewport Top & Bottom Ambient Depth Shadows (Mobile & Desktop) */}
+        <div className="absolute inset-x-0 top-0 h-20 sm:h-28 bg-gradient-to-b from-black via-black/60 to-transparent pointer-events-none z-[4]" />
+        <div className="absolute inset-x-0 bottom-0 h-24 sm:h-32 bg-gradient-to-t from-black via-black/70 to-transparent pointer-events-none z-[4]" />
         <div className="hidden lg:block absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.85)_100%)] z-[4]" />
-        <div className="hidden lg:block absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-[4]" />
-        <div className="hidden lg:block absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black via-black/50 to-transparent pointer-events-none z-[4]" />
         <div className="hidden lg:block absolute inset-y-0 left-0 w-3/5 bg-gradient-to-r from-black/80 via-black/40 to-transparent pointer-events-none z-[5]" />
 
         {/* 3. Captions Area (Directly below video frame on mobile, bottom overlay on desktop) */}
-        <div className="max-lg:relative max-lg:w-full max-lg:max-w-7xl max-lg:mx-auto max-lg:px-6 max-lg:min-h-[4.5rem] sm:max-lg:min-h-[5.5rem] max-lg:flex max-lg:items-center max-lg:z-10 lg:absolute lg:inset-x-0 lg:bottom-28 lg:max-w-7xl lg:mx-auto lg:px-12 lg:pointer-events-none lg:z-10">
+        <div className="max-lg:relative max-lg:w-full max-lg:max-w-7xl max-lg:mx-auto max-lg:px-6 max-lg:pb-6 max-lg:min-h-[4.5rem] sm:max-lg:min-h-[5.5rem] max-lg:flex max-lg:items-center max-lg:z-10 lg:absolute lg:inset-x-0 lg:bottom-28 lg:max-w-7xl lg:mx-auto lg:px-12 lg:pointer-events-none lg:z-10">
           <div className="relative w-full max-w-2xl sm:max-w-3xl min-h-[3.5rem] sm:min-h-[4.5rem] flex items-end">
             {captions.map((cap, i) => (
               <div
@@ -891,7 +896,7 @@ export default function ScrollVideo({
                 className="absolute left-0 bottom-0 top-auto will-change-transform transition-none"
                 style={{ opacity: 0, transform: "translate3d(0, 24px, 0)", visibility: "hidden" }}
               >
-                <h2 className="text-2xl sm:text-[140px] lg:text-section-huge font-extrabold tracking-tight lg:tracking-tighter text-white leading-none drop-shadow-md">
+                <h2 className="text-6xl sm:text-[140px] lg:text-section-huge font-extrabold tracking-tight lg:tracking-tighter text-white leading-none drop-shadow-md">
                   {cap.text}
                 </h2>
               </div>
