@@ -48,6 +48,8 @@ export interface ScrollVideoProps {
   /** Refresh priority for ScrollTrigger (higher refreshes earlier). Auto-calculated from DOM position if omitted. */
   /** Loading text displayed while frames are loading (default 'LOADING...') */
   loadingText?: string;
+  /** Subtitle displayed under loading text */
+  slowNetworkText?: string;
   refreshPriority?: number;
   /** Custom outer container class name */
   className?: string;
@@ -103,7 +105,7 @@ export default function ScrollVideo({
   framePath = DEFAULT_FRAME_PATH,
   mobileFramePath = DEFAULT_FRAME_PATH,
   aspectRatio = 16 / 9,
-  mobileAspect = 1 / 4,
+  mobileAspect = 3 / 4,
   mobilePinLength = 3.5,
   durationSeconds = 16,
   pinLength = "500%",
@@ -112,6 +114,7 @@ export default function ScrollVideo({
   blendFrames = true,
   captions = DEFAULT_CAPTIONS,
   loadingText = "LOADING...",
+  slowNetworkText = "Your network is very slow. Please wait...",
   refreshPriority,
   className = "",
   id = "office-tour",
@@ -373,7 +376,8 @@ export default function ScrollVideo({
       let loadedCount = 0;
 
       const checkAllLoaded = () => {
-        if (loadedSet.size + failedSet.size >= total) {
+        const minBuffer = Math.min(25, total);
+        if (loadedSet.size >= minBuffer && (loadedSet.size + failedSet.size >= total)) {
           if (loadingPunchRef.current) {
             loadingPunchRef.current.style.opacity = "0";
             setTimeout(() => {
@@ -457,29 +461,16 @@ export default function ScrollVideo({
       const retriedSet = new Set<number>();
       let activeWorkers = 0;
 
-      // Serialized decode chain on mobile to prevent scrolling decode spikes
-      let decodeChain = Promise.resolve();
-
       const loadAndDecode = async (url: string, signal?: AbortSignal): Promise<ImageBitmap | HTMLImageElement> => {
         if (typeof window !== "undefined" && "createImageBitmap" in window && typeof fetch !== "undefined") {
-          const res = await fetch(url, { signal });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          const blob = await res.blob();
-
-          if (isDesktop) {
+          try {
+            const res = await fetch(url, { signal });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const blob = await res.blob();
             return await createImageBitmap(blob);
+          } catch {
+            // Fallback to HTMLImageElement below if fetch or createImageBitmap fails
           }
-
-          return new Promise<ImageBitmap>((resolve, reject) => {
-            decodeChain = decodeChain.then(async () => {
-              try {
-                const bmp = await createImageBitmap(blob);
-                resolve(bmp);
-              } catch (e) {
-                reject(e);
-              }
-            });
-          });
         }
 
         return new Promise((resolve, reject) => {
@@ -904,6 +895,32 @@ export default function ScrollVideo({
         ref={stageRef}
         className="sticky top-0 lg:relative w-full h-svh bg-black text-white select-none overflow-hidden max-lg:flex max-lg:flex-col max-lg:justify-between lg:block"
       >
+        {/* Centered Big Punched Loading Text (Full-screen viewport overlay for both Mobile & Desktop) */}
+        <div
+          ref={loadingPunchRef}
+          className="absolute inset-0 z-30 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-700 ease-out select-none bg-black/40 backdrop-blur-[1px] px-4"
+          style={{ opacity: 1 }}
+        >
+          <h2 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white uppercase select-none text-center drop-shadow-2xl">
+            {loadingText.endsWith("...") ? (
+              <>
+                {loadingText.slice(0, -3)}
+                <span className="inline-block animate-pulse">...</span>
+              </>
+            ) : (
+              <>
+                {loadingText}
+                <span className="inline-block animate-pulse">...</span>
+              </>
+            )}
+          </h2>
+
+          {slowNetworkText && (
+            <p className="font-mono-tech text-xs sm:text-sm tracking-widest text-neutral-400 uppercase mt-3 sm:mt-5 text-center drop-shadow-md">
+              {slowNetworkText}
+            </p>
+          )}
+        </div>
         {/* 1. Top Bar */}
         {/* <div className="relative lg:absolute lg:top-10 lg:inset-x-0 w-full max-w-7xl mx-auto px-6 md:px-12 pt-5 sm:pt-8 lg:pt-0 pb-2 lg:pb-0 flex items-center justify-between pointer-events-none z-10">
           <div className="flex items-center gap-3 font-mono-tech text-xs tracking-widest uppercase">
@@ -931,26 +948,7 @@ export default function ScrollVideo({
             aria-hidden="true"
           />
 
-          {/* Centered Big Punched Loading Text */}
-          <div
-            ref={loadingPunchRef}
-            className="absolute inset-0 z-[6] flex items-center justify-center pointer-events-none transition-opacity duration-700 ease-out select-none"
-            style={{ opacity: 1 }}
-          >
-            <h2 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white uppercase select-none text-center drop-shadow-2xl px-4">
-              {loadingText.endsWith("...") ? (
-                <>
-                  {loadingText.slice(0, -3)}
-                  <span className="inline-block animate-pulse">...</span>
-                </>
-              ) : (
-                <>
-                  {loadingText}
-                  <span className="inline-block animate-pulse">...</span>
-                </>
-              )}
-            </h2>
-          </div>
+
 
 
           {/* Top & Bottom Cinematic Edge Shadows on Video Frame (Mobile Only) */}
