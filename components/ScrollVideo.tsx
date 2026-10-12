@@ -95,8 +95,8 @@ export default function ScrollVideo({
   sectionTitle = "THE OFFICE",
   frameCount = 240,
   mobileFrameCount = 120,
-  framePath = (i: number) => `/frames/f_${String(Math.max(1, Math.min(240, i))).padStart(4, "0")}.webp`,
-  mobileFramePath = (i: number) => `/frames-sm/f_${String(Math.max(1, Math.min(240, i))).padStart(4, "0")}.webp`,
+  framePath = (i: number) => `/frames/f_${String(Math.max(1, Math.min(frameCount, i))).padStart(4, "0")}.webp`,
+  mobileFramePath = (i: number) => `/frames-sm/f_${String(Math.max(1, Math.min(mobileFrameCount, i))).padStart(4, "0")}.webp`,
   aspectRatio = 16 / 9,
   mobileAspect = 1 / 4,
   mobilePinLength = 3.5,
@@ -104,7 +104,7 @@ export default function ScrollVideo({
   pinLength = "500%",
   focalX = 0.5,
   mobileFocal = DEFAULT_MOBILE_FOCAL,
-  blendFrames = false,
+  blendFrames = true,
   captions = DEFAULT_CAPTIONS,
   refreshPriority,
   className = "",
@@ -131,6 +131,7 @@ export default function ScrollVideo({
   const abortControllerRef = useRef<AbortController | null>(null);
   const cancelledRef = useRef(false);
   const queueStartedRef = useRef(false);
+  const pullNextRef = useRef<(() => void) | null>(null);
 
   // Playhead & smoothing references
   const targetFrameRef = useRef(0);
@@ -341,8 +342,11 @@ export default function ScrollVideo({
   }, []);
 
   /**
-   * Loading queue: max 6 parallel requests on desktop, max 3 on mobile.
-   * On mobile, decodes via createImageBitmap are serialized to prevent CPU/GPU spikes.
+   * High-performance Scroll-Aware Streaming Queue:
+   * 1. Preloads initial consecutive head buffer (frames 0 to 24) immediately for zero-lag start.
+   * 2. Dynamically prioritizes frames directly ahead of current scroll direction (+1 to +25).
+   * 3. Uses 8 parallel workers on desktop, 4 on mobile.
+   * 4. Decodes via createImageBitmap off main thread for butter-smooth 60fps scrolling.
    */
   const startLoadingQueue = useCallback(
     (isDesktop: boolean) => {
@@ -350,31 +354,16 @@ export default function ScrollVideo({
       queueStartedRef.current = true;
 
       const total = isDesktop ? frameCount : mobileFrameCount;
+      const loadedSet = new Set<number>();
+      const inFlightSet = new Set<number>();
+      const failedSet = new Set<number>();
+      let loadedCount = 0;
 
-      // Pass 1: every 10th frame
-      const pass1Queue: number[] = [];
-      for (let i = 0; i < total; i++) {
-        if (i !== 0 && ((i + 1) % 10 === 0 || i === total - 1)) {
-          pass1Queue.push(i);
-        }
-      }
-      const pass1Total = Math.max(1, pass1Queue.length);
-      let pass1LoadedCount = 0;
-
-      // Pass 2: remaining frame gaps in order
-      const pass1Set = new Set(pass1Queue);
-      const pass2Queue: number[] = [];
-      for (let i = 1; i < total; i++) {
-        if (!pass1Set.has(i)) {
-          pass2Queue.push(i);
-        }
-      }
-
-      const updatePass1Line = (ratio: number) => {
+      const updateProgressLine = (count: number) => {
         if (pass1BarRef.current) {
-          const clamped = Math.min(1, Math.max(0, ratio));
-          pass1BarRef.current.style.width = `${(clamped * 100).toFixed(1)}%`;
-          if (clamped >= 1) {
+          const ratio = Math.min(1, Math.max(0, count / Math.max(1, total * 0.35)));
+          pass1BarRef.current.style.width = `${(ratio * 100).toFixed(1)}%`;
+          if (count >= total * 0.35) {
             setTimeout(() => {
               if (pass1BarRef.current) {
                 pass1BarRef.current.style.opacity = "0";
@@ -384,8 +373,59 @@ export default function ScrollVideo({
         }
       };
 
-      // Desktop: 6 parallel requests. Mobile: 3 parallel requests.
-      const MAX_CONCURRENT = isDesktop ? 6 : 3;
+      const getNextFrameIndex = (): number | null => {
+        const current = Math.round(targetFrameRef.current);
+
+        // 1. Immediate lookahead in front of current scroll playhead (+0 to +20)
+        for (let offset = 0; offset <= 20; offset++) {
+          const idx = current + offset;
+          if (idx < total && !loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
+            return idx;
+          }
+        }
+
+        // 2. Initial head buffer (frames 0 to 24) to guarantee zero-lag start
+        for (let idx = 0; idx < Math.min(25, total); idx++) {
+          if (!loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
+            return idx;
+          }
+        }
+
+        // 3. Immediate lookbehind behind current playhead (-1 to -10)
+        for (let offset = 1; offset <= 10; offset++) {
+          const idx = current - offset;
+          if (idx >= 0 && !loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
+            return idx;
+          }
+        }
+
+        // 4. Broader lookahead (+21 to +50)
+        for (let offset = 21; offset <= 50; offset++) {
+          const idx = current + offset;
+          if (idx < total && !loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
+            return idx;
+          }
+        }
+
+        // 5. Sparse keyframe grid (every 4th frame) across the video
+        for (let idx = 0; idx < total; idx += 4) {
+          if (!loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
+            return idx;
+          }
+        }
+
+        // 6. Sequential fill for remaining gaps
+        for (let idx = 0; idx < total; idx++) {
+          if (!loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
+            return idx;
+          }
+        }
+
+        return null;
+      };
+
+      // Desktop: 8 parallel requests. Mobile: 4 parallel requests.
+      const MAX_CONCURRENT = isDesktop ? 8 : 4;
       let activeWorkers = 0;
 
       // Serialized decode chain on mobile to prevent scrolling decode spikes
@@ -401,7 +441,6 @@ export default function ScrollVideo({
             return await createImageBitmap(blob);
           }
 
-          // Serialize createImageBitmap one at a time on mobile
           return new Promise<ImageBitmap>((resolve, reject) => {
             decodeChain = decodeChain.then(async () => {
               try {
@@ -432,19 +471,13 @@ export default function ScrollVideo({
       const pullNext = () => {
         if (cancelledRef.current) return;
 
-        while (activeWorkers < MAX_CONCURRENT && (pass1Queue.length > 0 || pass2Queue.length > 0)) {
-          const isPass1 = pass1Queue.length > 0;
-          const idx = isPass1 ? pass1Queue.shift()! : pass2Queue.shift()!;
+        while (activeWorkers < MAX_CONCURRENT) {
+          const idx = getNextFrameIndex();
+          if (idx === null) break;
 
-          if (framesRef.current[idx]) {
-            if (isPass1) {
-              pass1LoadedCount++;
-              updatePass1Line(pass1LoadedCount / pass1Total);
-            }
-            continue;
-          }
-
+          inFlightSet.add(idx);
           activeWorkers++;
+
           const frameNum = idx + 1;
           const url = isDesktop ? framePath(frameNum) : mobileFramePath(frameNum);
 
@@ -455,23 +488,20 @@ export default function ScrollVideo({
                 return;
               }
               framesRef.current[idx] = img;
+              loadedSet.add(idx);
+              inFlightSet.delete(idx);
+              loadedCount++;
+              updateProgressLine(loadedCount);
 
-              // Redraw if this frame improves accuracy of current displayed view
+              // Redraw if this frame is close to current displayed view
               const currentTarget = Math.round(currentFrameRef.current);
-              if (Math.abs(idx - currentTarget) <= Math.abs(lastRenderedIdxRef.current - currentTarget)) {
+              if (Math.abs(idx - currentTarget) <= 2) {
                 draw();
-              }
-
-              if (isPass1) {
-                pass1LoadedCount++;
-                updatePass1Line(pass1LoadedCount / pass1Total);
               }
             })
             .catch(() => {
-              if (isPass1) {
-                pass1LoadedCount++;
-                updatePass1Line(pass1LoadedCount / pass1Total);
-              }
+              inFlightSet.delete(idx);
+              failedSet.add(idx);
             })
             .finally(() => {
               activeWorkers--;
@@ -480,6 +510,7 @@ export default function ScrollVideo({
         }
       };
 
+      pullNextRef.current = pullNext;
       pullNext();
     },
     [frameCount, mobileFrameCount, framePath, mobileFramePath, draw]
@@ -629,6 +660,7 @@ export default function ScrollVideo({
             targetFrameRef.current = p * (frameCount - 1);
             updateCaptionsUI(p);
             updateProgressUI(p);
+            pullNextRef.current?.();
           },
           onRefresh: (self) => {
             const p = self.progress;
@@ -641,6 +673,7 @@ export default function ScrollVideo({
             updateTimeUI(target, frameCount);
             updateCaptionsUI(p);
             updateProgressUI(p);
+            pullNextRef.current?.();
           },
         });
 
@@ -666,6 +699,7 @@ export default function ScrollVideo({
             targetFrameRef.current = p * (mobileFrameCount - 1);
             updateCaptionsUI(p);
             updateProgressUI(p);
+            pullNextRef.current?.();
           },
           onRefresh: (self) => {
             const p = self.progress;
@@ -678,6 +712,7 @@ export default function ScrollVideo({
             updateTimeUI(target, mobileFrameCount);
             updateCaptionsUI(p);
             updateProgressUI(p);
+            pullNextRef.current?.();
           },
         });
 
