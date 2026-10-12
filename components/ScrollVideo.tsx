@@ -46,6 +46,8 @@ export interface ScrollVideoProps {
   /** Captions appearing during specific progress intervals */
   captions?: ScrollVideoCaption[];
   /** Refresh priority for ScrollTrigger (higher refreshes earlier). Auto-calculated from DOM position if omitted. */
+  /** Loading text displayed while frames are loading (default 'LOADING...') */
+  loadingText?: string;
   refreshPriority?: number;
   /** Custom outer container class name */
   className?: string;
@@ -109,6 +111,7 @@ export default function ScrollVideo({
   mobileFocal = DEFAULT_MOBILE_FOCAL,
   blendFrames = true,
   captions = DEFAULT_CAPTIONS,
+  loadingText = "LOADING...",
   refreshPriority,
   className = "",
   id = "office-tour",
@@ -125,6 +128,7 @@ export default function ScrollVideo({
   const scrollHintRef = useRef<HTMLDivElement>(null);
   const pass1BarRef = useRef<HTMLDivElement>(null);
   const captionRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const loadingPunchRef = useRef<HTMLDivElement>(null);
 
   // State
   const [isReducedMotion, setIsReducedMotion] = useState(false);
@@ -368,6 +372,19 @@ export default function ScrollVideo({
       const failedSet = new Set<number>();
       let loadedCount = 0;
 
+      const checkAllLoaded = () => {
+        if (loadedSet.size + failedSet.size >= total) {
+          if (loadingPunchRef.current) {
+            loadingPunchRef.current.style.opacity = "0";
+            setTimeout(() => {
+              if (loadingPunchRef.current) {
+                loadingPunchRef.current.style.display = "none";
+              }
+            }, 700);
+          }
+        }
+      };
+
       const updateProgressLine = (count: number) => {
         if (pass1BarRef.current) {
           const targetBuffer = Math.max(35, Math.round(total * 0.3));
@@ -504,6 +521,7 @@ export default function ScrollVideo({
               inFlightSet.delete(idx);
               loadedCount++;
               updateProgressLine(loadedCount);
+              checkAllLoaded();
 
               // Redraw if this frame is close to current displayed view
               const currentTarget = Math.round(currentFrameRef.current);
@@ -517,6 +535,7 @@ export default function ScrollVideo({
                 retriedSet.add(idx);
               } else {
                 failedSet.add(idx);
+                checkAllLoaded();
               }
             })
             .finally(() => {
@@ -663,6 +682,9 @@ export default function ScrollVideo({
             const p = self.progress;
             progressRef.current = p;
             targetFrameRef.current = p * (frameCount - 1);
+            if (p > 0.05 && loadingPunchRef.current) {
+              loadingPunchRef.current.style.opacity = "0";
+            }
             updateCaptionsUI(p);
             updateProgressUI(p);
             pullNextRef.current?.();
@@ -702,6 +724,9 @@ export default function ScrollVideo({
             const p = self.progress;
             progressRef.current = p;
             targetFrameRef.current = p * (mobileFrameCount - 1);
+            if (p > 0.05 && loadingPunchRef.current) {
+              loadingPunchRef.current.style.opacity = "0";
+            }
             updateCaptionsUI(p);
             updateProgressUI(p);
             pullNextRef.current?.();
@@ -906,6 +931,28 @@ export default function ScrollVideo({
             aria-hidden="true"
           />
 
+          {/* Centered Big Punched Loading Text */}
+          <div
+            ref={loadingPunchRef}
+            className="absolute inset-0 z-[6] flex items-center justify-center pointer-events-none transition-opacity duration-700 ease-out select-none"
+            style={{ opacity: 1 }}
+          >
+            <h2 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter text-white uppercase select-none text-center drop-shadow-2xl px-4">
+              {loadingText.endsWith("...") ? (
+                <>
+                  {loadingText.slice(0, -3)}
+                  <span className="inline-block animate-pulse">...</span>
+                </>
+              ) : (
+                <>
+                  {loadingText}
+                  <span className="inline-block animate-pulse">...</span>
+                </>
+              )}
+            </h2>
+          </div>
+
+
           {/* Top & Bottom Cinematic Edge Shadows on Video Frame (Mobile Only) */}
           <div className="lg:hidden absolute inset-x-0 top-0 h-16 sm:h-24 bg-gradient-to-b from-black via-black/50 to-transparent pointer-events-none z-[3]" />
           <div className="lg:hidden absolute inset-x-0 bottom-0 h-20 sm:h-28 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none z-[3]" />
@@ -981,12 +1028,7 @@ export default function ScrollVideo({
           </div>
         </div> */}
 
-        {/* Pass 1 Loading 1px Line at Bottom Edge */}
-        <div
-          ref={pass1BarRef}
-          className="absolute bottom-0 left-0 h-[1px] bg-white pointer-events-none z-30 transition-opacity duration-700 ease-out"
-          style={{ width: "0%", opacity: 1 }}
-        />
+
       </div>
     </section>
   );
