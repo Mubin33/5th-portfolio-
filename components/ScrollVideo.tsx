@@ -90,13 +90,16 @@ function interpolateFocalX(p: number, keyframes: MobileFocalKeyframe[], defaultF
   return defaultFocal;
 }
 
+const DEFAULT_FRAME_PATH = (i: number) =>
+  `/frames-up/f_${String(Math.max(1, Math.min(500, i))).padStart(4, "0")}.webp`;
+
 export default function ScrollVideo({
   sectionNumber = "03",
   sectionTitle = "THE OFFICE",
   frameCount = 500,
   mobileFrameCount = 500,
-  framePath = (i: number) => `/frames-up/f_${String(Math.max(1, Math.min(frameCount, i))).padStart(4, "0")}.webp`,
-  mobileFramePath = (i: number) => `/frames-up/f_${String(Math.max(1, Math.min(mobileFrameCount, i))).padStart(4, "0")}.webp`,
+  framePath = DEFAULT_FRAME_PATH,
+  mobileFramePath = DEFAULT_FRAME_PATH,
   aspectRatio = 16 / 9,
   mobileAspect = 1 / 4,
   mobilePinLength = 3.5,
@@ -127,6 +130,12 @@ export default function ScrollVideo({
   const [isReducedMotion, setIsReducedMotion] = useState(false);
 
   // Storage and control refs
+  // Stable refs to prevent unneeded effect re-runs
+  const framePathRef = useRef(framePath);
+  framePathRef.current = framePath;
+  const mobileFramePathRef = useRef(mobileFramePath);
+  mobileFramePathRef.current = mobileFramePath;
+
   const framesRef = useRef<(ImageBitmap | HTMLImageElement | null)[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
   const cancelledRef = useRef(false);
@@ -377,16 +386,16 @@ export default function ScrollVideo({
       const getNextFrameIndex = (): number | null => {
         const current = Math.round(targetFrameRef.current);
 
-        // 1. Immediate Lookahead Window (+0 to +25): Frames directly ahead of user's current scroll playhead
-        for (let offset = 0; offset <= 25; offset++) {
+        // 1. Immediate Lookahead Window (+0 to +30): Frames directly ahead of user's current scroll playhead
+        for (let offset = 0; offset <= 30; offset++) {
           const idx = current + offset;
           if (idx < total && !loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
             return idx;
           }
         }
 
-        // 2. Essential Head Buffer (Frames 0 to 35): Guarantees instant zero-lag start on first visit
-        for (let idx = 0; idx < Math.min(35, total); idx++) {
+        // 2. Essential Head Buffer (Frames 0 to 40): Guarantees instant zero-lag start on first visit
+        for (let idx = 0; idx < Math.min(40, total); idx++) {
           if (!loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
             return idx;
           }
@@ -427,7 +436,8 @@ export default function ScrollVideo({
       };
 
       // Desktop: 10 parallel requests. Mobile: 5 parallel requests.
-      const MAX_CONCURRENT = isDesktop ? 10 : 5;
+      const MAX_CONCURRENT = isDesktop ? 12 : 6;
+      const retriedSet = new Set<number>();
       let activeWorkers = 0;
 
       // Serialized decode chain on mobile to prevent scrolling decode spikes
@@ -503,7 +513,11 @@ export default function ScrollVideo({
             })
             .catch(() => {
               inFlightSet.delete(idx);
-              failedSet.add(idx);
+              if (!retriedSet.has(idx)) {
+                retriedSet.add(idx);
+              } else {
+                failedSet.add(idx);
+              }
             })
             .finally(() => {
               activeWorkers--;
@@ -558,19 +572,8 @@ export default function ScrollVideo({
       }
     };
 
-    // 2. IntersectionObserver: begin full preloading queue when ~1.5 screens away
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          io.disconnect();
-          startLoadingQueue(window.innerWidth >= 1024);
-        }
-      },
-      { rootMargin: "150% 0px 150% 0px" }
-    );
-    if (sectionRef.current) {
-      io.observe(sectionRef.current);
-    }
+    // 2. Immediately start full preloading queue as soon as user lands on the site!
+    startLoadingQueue(isDesktop);
 
     // 3. Tab visibility handling: pause/resume ticker
     const handleVisibility = () => {
@@ -778,7 +781,6 @@ export default function ScrollVideo({
     return () => {
       cancelledRef.current = true;
       abortControllerRef.current?.abort();
-      io.disconnect();
       ro.disconnect();
       document.removeEventListener("visibilitychange", handleVisibility);
       gsap.ticker.remove(tickerCallback);

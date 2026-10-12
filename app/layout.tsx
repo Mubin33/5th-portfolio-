@@ -56,6 +56,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} bg-black text-white antialiased`}>
+      <head>
+        <link rel="preload" href="/frames-up/f_0001.webp" as="image" type="image/webp" />
+        <link rel="preload" href="/frames-up/f_0002.webp" as="image" type="image/webp" />
+        <link rel="preload" href="/frames-up/f_0003.webp" as="image" type="image/webp" />
+      </head>
       <body className="min-h-screen bg-black text-white selection:bg-white selection:text-black font-sans relative">
         {children}
       </body>
