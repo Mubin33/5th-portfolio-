@@ -21,11 +21,11 @@ export interface ScrollVideoProps {
   sectionTitle?: string;
   /** Function returning path for frame i (1-indexed) */
   framePath?: (i: number) => string;
-  /** Total frames on desktop (default 240) */
+  /** Total frames on desktop (default 500) */
   frameCount?: number;
   /** Function returning path for mobile frame i (1-indexed) */
   mobileFramePath?: (i: number) => string;
-  /** Total frames on mobile (default 120) */
+  /** Total frames on mobile (default 500) */
   mobileFrameCount?: number;
   /** Aspect ratio of source frames (default 16/9) */
   aspectRatio?: number;
@@ -93,14 +93,14 @@ function interpolateFocalX(p: number, keyframes: MobileFocalKeyframe[], defaultF
 export default function ScrollVideo({
   sectionNumber = "03",
   sectionTitle = "THE OFFICE",
-  frameCount = 240,
-  mobileFrameCount = 120,
-  framePath = (i: number) => `/frames/f_${String(Math.max(1, Math.min(frameCount, i))).padStart(4, "0")}.webp`,
-  mobileFramePath = (i: number) => `/frames-sm/f_${String(Math.max(1, Math.min(mobileFrameCount, i))).padStart(4, "0")}.webp`,
+  frameCount = 500,
+  mobileFrameCount = 500,
+  framePath = (i: number) => `/frames-up/f_${String(Math.max(1, Math.min(frameCount, i))).padStart(4, "0")}.webp`,
+  mobileFramePath = (i: number) => `/frames-up/f_${String(Math.max(1, Math.min(mobileFrameCount, i))).padStart(4, "0")}.webp`,
   aspectRatio = 16 / 9,
   mobileAspect = 1 / 4,
   mobilePinLength = 3.5,
-  durationSeconds = 10,
+  durationSeconds = 16,
   pinLength = "500%",
   focalX = 0.5,
   mobileFocal = DEFAULT_MOBILE_FOCAL,
@@ -361,9 +361,10 @@ export default function ScrollVideo({
 
       const updateProgressLine = (count: number) => {
         if (pass1BarRef.current) {
-          const ratio = Math.min(1, Math.max(0, count / Math.max(1, total * 0.35)));
+          const targetBuffer = Math.max(35, Math.round(total * 0.3));
+          const ratio = Math.min(1, Math.max(0, count / targetBuffer));
           pass1BarRef.current.style.width = `${(ratio * 100).toFixed(1)}%`;
-          if (count >= total * 0.35) {
+          if (count >= targetBuffer) {
             setTimeout(() => {
               if (pass1BarRef.current) {
                 pass1BarRef.current.style.opacity = "0";
@@ -376,45 +377,46 @@ export default function ScrollVideo({
       const getNextFrameIndex = (): number | null => {
         const current = Math.round(targetFrameRef.current);
 
-        // 1. Immediate lookahead in front of current scroll playhead (+0 to +20)
-        for (let offset = 0; offset <= 20; offset++) {
+        // 1. Immediate Lookahead Window (+0 to +25): Frames directly ahead of user's current scroll playhead
+        for (let offset = 0; offset <= 25; offset++) {
           const idx = current + offset;
           if (idx < total && !loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
             return idx;
           }
         }
 
-        // 2. Initial head buffer (frames 0 to 24) to guarantee zero-lag start
-        for (let idx = 0; idx < Math.min(25, total); idx++) {
+        // 2. Essential Head Buffer (Frames 0 to 35): Guarantees instant zero-lag start on first visit
+        for (let idx = 0; idx < Math.min(35, total); idx++) {
           if (!loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
             return idx;
           }
         }
 
-        // 3. Immediate lookbehind behind current playhead (-1 to -10)
-        for (let offset = 1; offset <= 10; offset++) {
+        // 3. Immediate Lookbehind Window (-1 to -15): Frames right behind playhead (for reverse scrolling)
+        for (let offset = 1; offset <= 15; offset++) {
           const idx = current - offset;
           if (idx >= 0 && !loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
             return idx;
           }
         }
 
-        // 4. Broader lookahead (+21 to +50)
-        for (let offset = 21; offset <= 50; offset++) {
+        // 4. Extended Lookahead Window (+26 to +75): Anticipates faster downward scrolling
+        for (let offset = 26; offset <= 75; offset++) {
           const idx = current + offset;
           if (idx < total && !loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
             return idx;
           }
         }
 
-        // 5. Sparse keyframe grid (every 4th frame) across the video
-        for (let idx = 0; idx < total; idx += 4) {
+        // 5. Sparse Skeleton Grid (Every 5th frame across all 500 frames):
+        // Ensures max gap is never more than 4 frames even during fast flings
+        for (let idx = 0; idx < total; idx += 5) {
           if (!loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
             return idx;
           }
         }
 
-        // 6. Sequential fill for remaining gaps
+        // 6. Sequential Fill: Complete all remaining gaps smoothly
         for (let idx = 0; idx < total; idx++) {
           if (!loadedSet.has(idx) && !inFlightSet.has(idx) && !failedSet.has(idx)) {
             return idx;
@@ -424,8 +426,8 @@ export default function ScrollVideo({
         return null;
       };
 
-      // Desktop: 8 parallel requests. Mobile: 4 parallel requests.
-      const MAX_CONCURRENT = isDesktop ? 8 : 4;
+      // Desktop: 10 parallel requests. Mobile: 5 parallel requests.
+      const MAX_CONCURRENT = isDesktop ? 10 : 5;
       let activeWorkers = 0;
 
       // Serialized decode chain on mobile to prevent scrolling decode spikes
