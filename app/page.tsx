@@ -37,7 +37,6 @@ export default function Home() {
       {/* Main Structural Content */}
       <main className="relative z-10 bg-black text-white min-h-screen">
         {/* 01: Hero Section */}
-        <ScrollVideo />
         <Hero isLoaded={isLoaded} />
 
         {/* 03: About Me Section */}
@@ -87,6 +86,7 @@ export default function Home() {
 
         {/* 13: Climax Contact Section */}
         <Contact />
+        <ScrollVideo />
       </main>
 
       {/* Global Minimal Footer */}
