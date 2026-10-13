@@ -21,6 +21,7 @@ import NoticeBoard from "@/components/NoticeBoard";
 import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import ScrollVideo from "@/components/ScrollVideo";
+import HeroScrollVideo from "@/components/HeroScrollVideo";
 
 export default function Home() {
   const [isLoaded, setIsLoaded] = useState(true);
@@ -37,6 +38,7 @@ export default function Home() {
       {/* Main Structural Content */}
       <main className="relative z-10 bg-black text-white min-h-screen">
         {/* 01: Hero Section */}
+        <HeroScrollVideo />
         <Hero isLoaded={isLoaded} />
 
         {/* 03: About Me Section */}
@@ -86,7 +88,7 @@ export default function Home() {
 
         {/* 13: Climax Contact Section */}
         <Contact />
-        <ScrollVideo />
+        {/* <ScrollVideo /> */}
       </main>
 
       {/* Global Minimal Footer */}
