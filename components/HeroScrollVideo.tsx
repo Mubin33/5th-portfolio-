@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 if (typeof window !== "undefined") {
@@ -11,6 +11,20 @@ export interface MobileFocalKeyframe {
   p: number; // scroll progress 0 to 1
   x: number; // horizontal crop anchor 0 to 1
 }
+
+export interface HeroScrollVideoCaption {
+  from: number; // 0 to 1
+  to: number;   // 0 to 1
+  text: string;
+}
+
+export type ScrollVideoCaption = HeroScrollVideoCaption;
+
+const DEFAULT_CAPTIONS: HeroScrollVideoCaption[] = [
+  // { from: 0.0, to: 0.3, text: "WELCOME" },
+  { from: 0.42, to: 0.72, text: "HELLO!" },
+  { from: 0.8, to: 1.0, text: "LET'S WORK TOGETHER" },
+];
 
 export interface HeroScrollVideoProps {
   /** Desktop video (default "/hero-animation.mp4") */
@@ -39,6 +53,8 @@ export interface HeroScrollVideoProps {
   loadingText?: string;
   /** Subtitle displayed under loading text */
   slowNetworkText?: string;
+  /** Captions appearing during specific progress intervals */
+  captions?: HeroScrollVideoCaption[];
   /** Refresh priority for ScrollTrigger (higher refreshes earlier). Default 35 when preceding other pinned sections. */
   refreshPriority?: number;
   className?: string;
@@ -75,7 +91,7 @@ export default function HeroScrollVideo({
   videoSrc = "/hero-animation.mp4",
   mobileVideoSrc = "/hero-animation-sm.mp4",
   posterSrc = "/hero-animation-poster.webp",
-  durationSeconds = 10,
+  durationSeconds = 11,
   fps = 50,
   aspectRatio = 16 / 9,
   mobileAspect = 4 / 3,
@@ -85,6 +101,7 @@ export default function HeroScrollVideo({
   mobileFocal = DEFAULT_MOBILE_FOCAL,
   loadingText = "LOADING...",
   slowNetworkText = "your internet is very slow, please wait to load.",
+  captions = DEFAULT_CAPTIONS,
   refreshPriority,
   className = "",
   id = "hero-scroll-video",
@@ -106,6 +123,53 @@ export default function HeroScrollVideo({
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
+
+  const captionRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  /**
+   * Updates caption opacity and vertical translation during its specified progress interval.
+   */
+  const updateCaptionsUI = useCallback(
+    (p: number) => {
+      if (!captions || captions.length === 0) return;
+
+      captions.forEach((cap, idx) => {
+        const el = captionRefs.current[idx];
+        if (!el) return;
+
+        const from = cap.from;
+        const to = cap.to;
+        const span = Math.max(0.001, to - from);
+
+        if (p < from || p > to) {
+          el.style.opacity = "0";
+          el.style.visibility = "hidden";
+          el.style.transform = "translate3d(0, 24px, 0)";
+          return;
+        }
+
+        el.style.visibility = "visible";
+        const fadeInEnd = from + span * 0.22;
+        const fadeOutStart = to - span * 0.22;
+
+        if (p < fadeInEnd) {
+          const t = (p - from) / (fadeInEnd - from);
+          el.style.opacity = t.toFixed(3);
+          const y = (24 * (1 - t)).toFixed(1);
+          el.style.transform = `translate3d(0, ${y}px, 0)`;
+        } else if (p > fadeOutStart) {
+          const t = (p - fadeOutStart) / (to - fadeOutStart);
+          el.style.opacity = (1 - t).toFixed(3);
+          const y = (-12 * t).toFixed(1);
+          el.style.transform = `translate3d(0, ${y}px, 0)`;
+        } else {
+          el.style.opacity = "1";
+          el.style.transform = "translate3d(0, 0, 0)";
+        }
+      });
+    },
+    [captions]
+  );
 
   // Latest crop settings, read inside the effect without re-running it
   const cropRef = useRef({ focalX, mobileFocal, aspectRatio });
@@ -328,6 +392,7 @@ export default function HeroScrollVideo({
       if (p > 0.03 && loadingPunchRef.current) {
         loadingPunchRef.current.style.opacity = "0";
       }
+      updateCaptionsUI(p);
     };
 
     // Dynamically calculate refreshPriority so earlier pinned sections calculate before downstream ones
@@ -371,6 +436,8 @@ export default function HeroScrollVideo({
     };
     mm.add("(min-width: 1024px)", makeTrigger(true));
     mm.add("(max-width: 1023px)", makeTrigger(false));
+
+    updateCaptionsUI(0);
 
     // Re-sort and recalculate all ScrollTriggers on page so subsequent sections (Hero, About, Skills, Projects)
     // get exact, pixel-perfect start/end scroll offsets!
@@ -433,7 +500,7 @@ export default function HeroScrollVideo({
       video.load();
       if (blobUrl) URL.revokeObjectURL(blobUrl);
     };
-  }, [isReducedMotion, videoSrc, mobileVideoSrc, posterSrc, durationSeconds, fps, pinLength, refreshPriority]);
+  }, [isReducedMotion, videoSrc, mobileVideoSrc, posterSrc, durationSeconds, fps, pinLength, refreshPriority, updateCaptionsUI]);
 
   /* ---------- reduced motion: a still picture, no text ---------- */
   if (isReducedMotion) {
@@ -448,6 +515,15 @@ export default function HeroScrollVideo({
           <img src={posterSrc} alt={A11Y_TEXT} className="absolute inset-0 w-full h-full object-cover" />
         )}
         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_55%,rgba(0,0,0,0.8)_100%)]" />
+
+        {/* Reduced motion static captions display */}
+        <div className="max-w-7xl mx-auto px-6 md:px-12 py-12 space-y-6">
+          {captions.map((cap, i) => (
+            <p key={i} className="text-2xl md:text-4xl font-bold tracking-tight text-white">
+              {cap.text}
+            </p>
+          ))}
+        </div>
       </section>
     );
   }
@@ -467,11 +543,11 @@ export default function HeroScrollVideo({
         className={`hsv-wrapper relative w-full h-[var(--hsv-pin-h)] lg:h-svh bg-black ${className}`}
       >
         {/* Mobile: sticky stage. Desktop: GSAP pins the whole section */}
-        <div className="hsv-stage sticky top-0 lg:relative w-full h-svh overflow-hidden bg-black flex items-center justify-center">
+        <div className="hsv-stage sticky top-0 lg:relative w-full h-svh overflow-hidden bg-black max-lg:flex max-lg:flex-col max-lg:justify-between lg:block">
           {/* Video frame: edge-to-edge strip on mobile, full-bleed on desktop */}
           <div
             ref={videoFrameRef}
-            className="hsv-video-frame relative w-full overflow-hidden max-lg:aspect-[var(--hsv-aspect)] max-lg:max-h-[70svh] lg:absolute lg:inset-0 lg:h-full"
+            className="hsv-video-frame max-lg:relative max-lg:w-full max-lg:my-auto max-lg:border-y max-lg:border-white/10 max-lg:overflow-hidden max-lg:aspect-[var(--hsv-aspect)] max-lg:max-h-[70svh] lg:absolute lg:inset-0 lg:w-full lg:h-full lg:border-none lg:my-0 lg:aspect-auto"
           >
             <canvas ref={canvasRef} aria-hidden="true" className="hsv-canvas block w-full h-full" />
 
@@ -482,6 +558,29 @@ export default function HeroScrollVideo({
           </div>
 
           <p className="sr-only">{A11Y_TEXT}</p>
+
+          {/* Desktop Left Ambient Vignette for Captions */}
+          <div className="hidden lg:block absolute inset-y-0 left-0 w-full sm:w-3/4 md:w-1/2 bg-gradient-to-r from-black/70 via-black/35 to-transparent pointer-events-none z-[5]" />
+
+          {/* Captions Area (Directly below video frame on mobile, bottom overlay on desktop) */}
+          <div className="max-lg:relative max-lg:w-full max-lg:max-w-7xl max-lg:mx-auto max-lg:px-6 max-lg:pb-6 max-lg:min-h-[4.5rem] sm:max-lg:min-h-[5.5rem] max-lg:flex max-lg:items-center max-lg:z-10 lg:absolute lg:inset-x-0 lg:bottom-28 lg:max-w-7xl lg:mx-auto lg:px-12 lg:pointer-events-none lg:z-10">
+            <div className="relative w-full max-w-2xl sm:max-w-3xl min-h-[3.5rem] sm:min-h-[4.5rem] flex items-end">
+              {captions.map((cap, i) => (
+                <div
+                  key={i}
+                  ref={(el) => {
+                    captionRefs.current[i] = el;
+                  }}
+                  className="absolute left-0 bottom-0 top-auto will-change-transform transition-none"
+                  style={{ opacity: 0, transform: "translate3d(0, 24px, 0)", visibility: "hidden" }}
+                >
+                  <h2 className="text-6xl sm:text-[140px] lg:text-section-huge font-extrabold tracking-tight lg:tracking-tighter text-white leading-none drop-shadow-md">
+                    {cap.text}
+                  </h2>
+                </div>
+              ))}
+            </div>
+          </div>
 
           {/* Centered Big Punched Loading Text (Over the video for 1s, then fades out smoothly) */}
           <div
