@@ -94,7 +94,7 @@ export default function HeroScrollVideo({
   durationSeconds = 11,
   fps = 50,
   aspectRatio = 16 / 9,
-  mobileAspect = 4 / 3,
+  mobileAspect = 3 / 4,
   pinLength = "500%",
   mobilePinLength = 3.5,
   focalX = 0.5,
@@ -547,7 +547,7 @@ export default function HeroScrollVideo({
           {/* Video frame: edge-to-edge strip on mobile, full-bleed on desktop */}
           <div
             ref={videoFrameRef}
-            className="hsv-video-frame max-lg:relative max-lg:w-full max-lg:my-auto max-lg:border-y max-lg:border-white/10 max-lg:overflow-hidden max-lg:aspect-[var(--hsv-aspect)] max-lg:max-h-[70svh] lg:absolute lg:inset-0 lg:w-full lg:h-full lg:border-none lg:my-0 lg:aspect-auto"
+            className="hsv-video-frame max-lg:relative max-lg:w-full max-lg:my-auto border-none max-lg:overflow-hidden max-lg:aspect-[var(--hsv-aspect)] max-lg:max-h-[70svh] lg:absolute lg:inset-0 lg:w-full lg:h-full lg:my-0 lg:aspect-auto"
           >
             <canvas ref={canvasRef} aria-hidden="true" className="hsv-canvas block w-full h-full" />
 
@@ -611,7 +611,7 @@ export default function HeroScrollVideo({
           </div>
 
           {/* Thin lines only, no text: scroll progress, and download progress */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-px bg-white/10">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-px bg-transparent">
             <div
               ref={progressBarRef}
               className="h-full origin-left bg-white/70"
