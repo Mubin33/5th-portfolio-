@@ -262,7 +262,7 @@ export default function NoticeBoard() {
             type="button"
             onClick={handleSendAllNotices}
             disabled={store.boardPapers.length === 0 || isSending}
-            className="group relative w-full overflow-hidden border border-white/20 hover:bg-neutral-950 bg-white hover:text-white text-black py-2 sm:py-4 px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-center gap-3 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_8px_30px_rgba(0,0,0,0.5)] cursor-pointer"
+            className="group relative w-full overflow-hidden border border-white/20 hover:bg-neutral-950 bg-white hover:text-white text-black py-2 sm:py-4 px-6 sm:px-8 flex items-center justify-center gap-3 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed shadow-[0_8px_30px_rgba(0,0,0,0.5)] cursor-pointer"
           >
             <div className="flex items-center gap-3">
               {/* <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" /> */}

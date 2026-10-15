@@ -23,7 +23,7 @@ export type ScrollVideoCaption = HeroScrollVideoCaption;
 const DEFAULT_CAPTIONS: HeroScrollVideoCaption[] = [
   // { from: 0.0, to: 0.3, text: "WELCOME" },
   { from: 0.42, to: 0.72, text: "HELLO!" },
-  { from: 0.8, to: 1.0, text: "LET'S WORK TOGETHER" },
+  { from: 0.8, to: 1.0, text: "LET'S EXPLORE TOGETHER" },
 ];
 
 export interface HeroScrollVideoProps {
@@ -91,7 +91,7 @@ export default function HeroScrollVideo({
   videoSrc = "/hero-animation.mp4",
   mobileVideoSrc = "/hero-animation-sm.mp4",
   posterSrc = "/hero-animation-poster.webp",
-  durationSeconds = 11,
+  durationSeconds = 10,
   fps = 50,
   aspectRatio = 16 / 9,
   mobileAspect = 3 / 4,
@@ -120,7 +120,7 @@ export default function HeroScrollVideo({
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLoading(false);
-    }, 2000);
+    }, 3000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -585,7 +585,7 @@ export default function HeroScrollVideo({
           {/* Centered Big Punched Loading Text (Over the video for 1s, then fades out smoothly) */}
           <div
             ref={loadingPunchRef}
-            className={`absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-700 ease-out select-none bg-black/40 backdrop-blur-[2px] px-4 ${
+            className={`absolute inset-0 z-20 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-700 ease-out select-none bg-black/40 backdrop-blur-[3px] px-4 ${
               showLoading ? "opacity-100" : "opacity-0"
             }`}
           >
@@ -611,7 +611,7 @@ export default function HeroScrollVideo({
           </div>
 
           {/* Thin lines only, no text: scroll progress, and download progress */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-px bg-transparent">
+          {/* <div className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-px bg-transparent">
             <div
               ref={progressBarRef}
               className="h-full origin-left bg-white/70"
@@ -624,7 +624,7 @@ export default function HeroScrollVideo({
               className="h-full origin-left bg-white transition-opacity duration-500"
               style={{ transform: "scaleX(0)" }}
             />
-          </div>
+          </div> */}
         </div>
       </section>
 
